@@ -748,7 +748,123 @@
       document.getElementById('scenario').value = map[type][1];
       generateAnswer();
       document.getElementById('agent').scrollIntoView({ behavior: 'smooth' });
-    }
+    }/* MOBILE RESPONSIVENESS */
+@media (max-width: 900px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .app,
+  .container,
+  .dashboard,
+  .main,
+  .layout {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 16px;
+  }
+
+  .sidebar nav,
+  .nav,
+  .menu {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+  }
+
+  .sidebar a,
+  .nav-item {
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+
+  .main,
+  .content,
+  .hero {
+    margin-left: 0;
+    padding: 24px 18px;
+  }
+
+  .hero-logo,
+  .logo {
+    max-width: 180px;
+    height: auto;
+  }
+
+  h1 {
+    font-size: 32px;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  p {
+    font-size: 16px;
+  }
+
+  .chat-box,
+  .search-box,
+  .input-wrapper {
+    width: 100%;
+  }
+
+  .cards,
+  .quick-actions,
+  .dashboard-grid,
+  .sop-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .profile,
+  .top-profile,
+  .user-menu {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main,
+  .content,
+  .hero {
+    padding: 22px 14px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .hero-logo,
+  .logo {
+    max-width: 150px;
+  }
+
+  input,
+  textarea,
+  button {
+    font-size: 16px;
+  }
+
+  .card,
+  .quick-card,
+  .sop-card {
+    padding: 18px;
+  }
+}
   </script>
 </body>
 </html>
