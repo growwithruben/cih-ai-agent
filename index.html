@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIH SOP AI Agent</title>
+  <link rel="icon" href="assets/logo.png">
+
   <style>
-   
     :root {
       --cih-blue: #25aae1;
       --cih-blue-dark: #0C6489;
@@ -16,7 +17,6 @@
       --card: #ffffff;
       --soft-blue: #e9f7fd;
       --success: #10b981;
-      --warning: #f59e0b;
       --radius: 22px;
       --shadow: 0 22px 60px rgba(15, 23, 42, 0.12);
     }
@@ -30,6 +30,7 @@
         radial-gradient(circle at top left, rgba(37,170,225,.22), transparent 34%),
         linear-gradient(180deg, #ffffff 0%, var(--bg) 62%, #eef6fb 100%);
       color: var(--ink);
+      overflow-x: hidden;
     }
 
     a { color: inherit; }
@@ -50,21 +51,30 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       font-weight: 900;
       letter-spacing: -0.04em;
     }
 
-    .logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      color: white;
-      background: linear-gradient(135deg, var(--cih-blue), var(--cih-blue-dark));
-      box-shadow: 0 12px 30px rgba(37,170,225,.35);
-      font-weight: 950;
+    .brand-logo {
+      width: 74px;
+      height: auto;
+      display: block;
+    }
+
+    .brand-title {
+      line-height: 1.05;
+    }
+
+    .brand-title div {
+      font-size: 20px;
+      letter-spacing: -0.04em;
+    }
+
+    .brand-title small {
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: 0;
     }
 
     .pill {
@@ -79,6 +89,7 @@
       font-size: 13px;
       font-weight: 800;
       backdrop-filter: blur(10px);
+      white-space: nowrap;
     }
 
     .hero {
@@ -210,8 +221,8 @@
     }
 
     .bot-avatar {
-      width: 56px;
-      height: 56px;
+      width: 58px;
+      height: 58px;
       border-radius: 20px;
       background: #101827;
       color: var(--cih-blue);
@@ -219,10 +230,17 @@
       place-items: center;
       font-weight: 950;
       font-size: 20px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
     }
 
     .agent-id h3 { margin: 0; font-size: 17px; }
-    .agent-id p { margin: 3px 0 0; color: var(--muted); font-size: 13px; font-weight: 700; }
+
+    .agent-id p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
 
     .status {
       color: var(--success);
@@ -343,7 +361,14 @@
     }
 
     .sop-card h3 { margin: 0 0 10px; font-size: 18px; letter-spacing: -0.03em; }
-    .sop-card p { margin: 0; color: var(--muted); line-height: 1.55; font-weight: 600; font-size: 14px; }
+
+    .sop-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-weight: 600;
+      font-size: 14px;
+    }
 
     .workspace {
       display: grid;
@@ -380,12 +405,25 @@
     }
 
     textarea { min-height: 120px; resize: vertical; }
-    select:focus, textarea:focus { border-color: var(--cih-blue); box-shadow: 0 0 0 4px rgba(37,170,225,.15); }
+
+    select:focus, textarea:focus {
+      border-color: var(--cih-blue);
+      box-shadow: 0 0 0 4px rgba(37,170,225,.15);
+    }
 
     .field { margin-bottom: 14px; }
 
-    .answer-panel h3 { margin: 0 0 8px; font-size: 24px; letter-spacing: -0.04em; }
-    .answer-panel p { color: var(--muted); line-height: 1.65; font-weight: 600; }
+    .answer-panel h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .answer-panel p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 600;
+    }
 
     .checklist {
       display: grid;
@@ -418,7 +456,12 @@
       font-weight: 950;
     }
 
-    .output-actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .output-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
     .mini-btn {
       border: 1px solid var(--line);
@@ -429,7 +472,11 @@
       cursor: pointer;
     }
 
-    .mini-btn.blue { background: var(--cih-blue); color: white; border-color: var(--cih-blue); }
+    .mini-btn.blue {
+      background: var(--cih-blue);
+      color: white;
+      border-color: var(--cih-blue);
+    }
 
     .automation-strip {
       display: grid;
@@ -458,9 +505,22 @@
       top: -30px;
     }
 
-    .auto-card small { color: #9ee7ff; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; }
+    .auto-card small {
+      color: #9ee7ff;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
     .auto-card h3 { margin: 10px 0 8px; font-size: 17px; }
-    .auto-card p { margin: 0; color: #cbd5e1; line-height: 1.45; font-size: 13px; font-weight: 650; }
+
+    .auto-card p {
+      margin: 0;
+      color: #cbd5e1;
+      line-height: 1.45;
+      font-size: 13px;
+      font-weight: 650;
+    }
 
     footer {
       padding: 28px 0 48px;
@@ -476,21 +536,80 @@
       .automation-strip { grid-template-columns: repeat(2, 1fr); }
     }
 
-    @media (max-width: 640px) {
-      header, .section-head { align-items: flex-start; flex-direction: column; }
-      .stats, .grid, .automation-strip { grid-template-columns: 1fr; }
+    @media (max-width: 760px) {
+      .page { width: min(100% - 24px, 1180px); }
+
+      header, .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .brand { align-items: flex-start; }
+
+      .brand-logo { width: 64px; }
+
+      .brand-title div { font-size: 18px; }
+
+      .pill { white-space: normal; }
+
+      .hero { padding-top: 24px; }
+
+      h1 { font-size: clamp(36px, 12vw, 56px); }
+
+      .subhead { font-size: 17px; }
+
+      .stats, .grid, .automation-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .agent-top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
       .chat-box { min-height: 390px; }
+
+      .bubble { max-width: 100%; }
+
+      .cta-row .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .output-actions .mini-btn { width: 100%; }
+    }
+
+    @media (max-width: 480px) {
+      section { padding: 28px 0; }
+
+      .agent-card,
+      .panel,
+      .answer-panel {
+        border-radius: 22px;
+        padding: 15px;
+      }
+
+      .chat-box {
+        border-radius: 20px;
+        padding: 14px;
+      }
+
+      .sop-card,
+      .auto-card {
+        min-height: auto;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="page">
     <header>
       <div class="brand">
-        <div class="logo">CIH</div>
-        <div>
+        <img src="assets/houston-logo.png" class="brand-logo" alt="City Insight Houston Logo">
+        <div class="brand-title">
           <div>City Insight Houston</div>
-          <small style="color: var(--muted); font-weight: 800; letter-spacing: 0;">SOP Intelligence System</small>
+          <small>SOP Intelligence System</small>
         </div>
       </div>
       <div class="pill">● Internal AI Agent</div>
@@ -501,11 +620,13 @@
         <div>
           <div class="eyebrow">Trained on CIH Residential + Commercial SOPs</div>
           <h1>Meet your <span>AI SOP Agent</span> for faster, cleaner real estate execution.</h1>
-          <p class="subhead">This page presents an internal-facing AI assistant concept built around City Insight Houston’s operating procedures. It helps agents know what to do next, which documents to collect, which CRM stage to update, and what automations should fire.</p>
+          <p class="subhead">This internal-facing AI assistant is built around City Insight Houston’s operating procedures. It helps agents know what to do next, which documents to collect, which CRM stage to update, and what automations should fire.</p>
+
           <div class="cta-row">
             <a class="btn btn-primary" href="#agent">Ask the SOP Agent →</a>
             <a class="btn btn-secondary" href="#knowledge">View SOP Knowledge Base</a>
           </div>
+
           <div class="stats">
             <div class="stat"><strong>8</strong><small>Core SOP Workflows</small></div>
             <div class="stat"><strong>70+</strong><small>Process Phases</small></div>
@@ -519,16 +640,18 @@
               <div class="bot-avatar">AI</div>
               <div>
                 <h3>CIH SOP Agent</h3>
-                <p>Residential • Commercial • Compliance • Automations</p>
+                <p>Residential • Commercial • Compliance • CIH CRM</p>
               </div>
             </div>
             <div class="status">Online</div>
           </div>
+
           <div class="chat-box">
             <div class="bubble user">I just got a new buyer lead. What do I do first?</div>
             <div class="bubble bot">Start with qualification: collect contact info, desired area, price range, financing status, timeline, and motivation. Then send the CIH Buyer Intake Form and schedule a Buyer Consultation.</div>
             <div class="bubble user">What stage should they be in?</div>
             <div class="bubble bot">Once the intake is complete and consultation is scheduled, tag them as “Qualified Buyer.” After the consultation and representation agreement, move them to “Active Buyer.”</div>
+
             <div class="quick-prompts">
               <button class="prompt-btn" onclick="loadPrompt('buyer')">Generate buyer next steps</button>
               <button class="prompt-btn" onclick="loadPrompt('seller')">Create seller listing checklist</button>
@@ -543,15 +666,16 @@
           <h2>SOP Knowledge Base</h2>
           <p>The AI agent is organized around the major CIH service paths so agents can quickly get the right checklist, client script, document list, and CRM move.</p>
         </div>
+
         <div class="grid">
           <div class="sop-card"><span class="tag">Residential</span><h3>Tenant Leasing</h3><p>Initial qualification, property list, tours, application, lease signing, move-in, review request, and commission packet.</p></div>
           <div class="sop-card"><span class="tag">Residential</span><h3>Landlord Lease Listing</h3><p>Property intake, listing activation, inquiry management, tenant screening, lease execution, and renewal reminders.</p></div>
-          <div class="sop-card"><span class="tag">Residential</span><h3>Buyer Representation</h3><p>Buyer intake, consultation, home search, offer strategy, due diligence, closing, reviews, and 12-month nurture.</p></div>
+          <div class="sop-card"><span class="tag">Residential</span><h3>Buyer Representation</h3><p>Buyer intake, consultation, home search, offer strategy, due diligence, closing, reviews, and nurture follow-up.</p></div>
           <div class="sop-card"><span class="tag">Residential</span><h3>Seller Listing</h3><p>Listing presentation, pre-listing prep, launch, showings, open house strategy, negotiation, closing, and annual CMA follow-up.</p></div>
           <div class="sop-card"><span class="tag">Commercial</span><h3>Tenant Leasing</h3><p>Needs assessment, market research, showings, LOI, lease review, COI, move-in, and renewal tracking.</p></div>
           <div class="sop-card"><span class="tag">Commercial</span><h3>Landlord Leasing</h3><p>Property intake, launch on commercial platforms, lead qualification, LOI, lease execution, COI, and owner drip campaign.</p></div>
           <div class="sop-card"><span class="tag">Commercial</span><h3>Buyer Representation</h3><p>Acquisition goals, property shortlist, LOI, contract, due diligence, financing, closing, and valuation follow-up.</p></div>
-          <div class="sop-card"><span class="tag">Commercial</span><h3>Seller Disposition</h3><p>Financial analysis, OM prep, NDA process, buyer qualification, offer summary, due diligence, closing, and investor nurture.</p></div>
+          <div class="sop-card"><span class="tag">Commercial</span><h3>Seller Disposition</h3><p>Financial analysis, OM prep, buyer qualification, negotiations, due diligence, and investor follow-up.</p></div>
         </div>
       </section>
 
@@ -560,6 +684,7 @@
           <h2>Ask the AI SOP Agent</h2>
           <p>Choose a workflow and tell the agent what is happening. It will generate next steps, deliverables, CRM moves, and automation ideas.</p>
         </div>
+
         <div class="workspace">
           <div class="panel">
             <div class="field">
@@ -575,10 +700,12 @@
                 <option value="commercialSeller">Commercial Seller / Disposition</option>
               </select>
             </div>
+
             <div class="field">
               <label for="scenario">What is the situation?</label>
               <textarea id="scenario" placeholder="Example: Buyer consultation is complete and they want to see homes this weekend."></textarea>
             </div>
+
             <button class="btn btn-primary" onclick="generateAnswer()">Generate SOP Guidance</button>
           </div>
 
@@ -586,6 +713,7 @@
             <h3 id="answerTitle">SOP Guidance</h3>
             <p id="answerIntro">Select a workflow and generate guidance to see the AI agent response.</p>
             <div class="checklist" id="checklist"></div>
+
             <div class="output-actions">
               <button class="mini-btn blue" onclick="copyGuidance()">Copy Guidance</button>
               <button class="mini-btn" onclick="resetGuidance()">Reset</button>
@@ -597,7 +725,9 @@
       <section>
         <div class="section-head">
           <h2>Automation Brain</h2>
+          <p>The AI agent can also remind agents which trigger should start the next workflow inside the CIH CRM, transaction tracker, or internal follow-up system.</p>
         </div>
+
         <div class="automation-strip">
           <div class="auto-card"><small>Trigger</small><h3>Intake Form Submitted</h3><p>Create record or deal, notify agent/admin, and move contact into the correct pipeline.</p></div>
           <div class="auto-card"><small>Trigger</small><h3>Contract / LOI Executed</h3><p>Start transaction tracking, notify broker or TC, and create compliance tasks.</p></div>
@@ -609,7 +739,7 @@
     </main>
 
     <footer>
-      Confidential – Internal Use Only © City Insight Houston 2026 • SOP AI Agent concept page
+      Confidential – Internal Use Only © City Insight Houston 2026 • SOP AI Agent
     </footer>
   </div>
 
@@ -717,8 +847,10 @@
       const selected = document.getElementById('workflow').value;
       const scenario = document.getElementById('scenario').value.trim();
       const data = guidance[selected];
+
       document.getElementById('answerTitle').textContent = data.title;
       document.getElementById('answerIntro').textContent = scenario ? `Scenario: ${scenario} — ${data.intro}` : data.intro;
+
       const list = document.getElementById('checklist');
       list.innerHTML = data.items.map((item, index) => `<div class="check-item"><span>${index + 1}</span><div>${item}</div></div>`).join('');
     }
@@ -744,127 +876,12 @@
         seller: ['seller', 'Seller signed the listing agreement and we need to prepare for launch and open house.'],
         commercial: ['commercialTenant', 'Commercial tenant identified a space and needs LOI guidance.']
       };
+
       document.getElementById('workflow').value = map[type][0];
       document.getElementById('scenario').value = map[type][1];
       generateAnswer();
       document.getElementById('agent').scrollIntoView({ behavior: 'smooth' });
-    }/* MOBILE RESPONSIVENESS */
-@media (max-width: 900px) {
-  body {
-    overflow-x: hidden;
-  }
-
-  .app,
-  .container,
-  .dashboard,
-  .main,
-  .layout {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 16px;
-  }
-
-  .sidebar nav,
-  .nav,
-  .menu {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-  }
-
-  .sidebar a,
-  .nav-item {
-    white-space: nowrap;
-    min-width: fit-content;
-  }
-
-  .main,
-  .content,
-  .hero {
-    margin-left: 0;
-    padding: 24px 18px;
-  }
-
-  .hero-logo,
-  .logo {
-    max-width: 180px;
-    height: auto;
-  }
-
-  h1 {
-    font-size: 32px;
-    line-height: 1.1;
-  }
-
-  h2 {
-    font-size: 24px;
-  }
-
-  p {
-    font-size: 16px;
-  }
-
-  .chat-box,
-  .search-box,
-  .input-wrapper {
-    width: 100%;
-  }
-
-  .cards,
-  .quick-actions,
-  .dashboard-grid,
-  .sop-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .profile,
-  .top-profile,
-  .user-menu {
-    display: none;
-  }
-}
-
-@media (max-width: 520px) {
-  .sidebar {
-    display: none;
-  }
-
-  .main,
-  .content,
-  .hero {
-    padding: 22px 14px;
-  }
-
-  h1 {
-    font-size: 28px;
-  }
-
-  .hero-logo,
-  .logo {
-    max-width: 150px;
-  }
-
-  input,
-  textarea,
-  button {
-    font-size: 16px;
-  }
-
-  .card,
-  .quick-card,
-  .sop-card {
-    padding: 18px;
-  }
-}
+    }
   </script>
 </body>
 </html>
