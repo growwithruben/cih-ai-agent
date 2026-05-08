@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIH SOP AI Agent</title>
+  <style>
+    :root {
+      --cih-blue: #25aae1;
+      --cih-blue-dark: #0C6489;
+      --ink: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --bg: #f5f8fb;
+      --card: #ffffff;
+      --soft-blue: #e9f7fd;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --radius: 22px;
+      --shadow: 0 22px 60px rgba(15, 23, 42, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37,170,225,.22), transparent 34%),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 62%, #eef6fb 100%);
+      color: var(--ink);
+    }
+
+    a { color: inherit; }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 28px 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(135deg, var(--cih-blue), var(--cih-blue-dark));
+      box-shadow: 0 12px 30px rgba(37,170,225,.35);
+      font-weight: 950;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid rgba(37,170,225,.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      color: var(--cih-blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 28px;
+      align-items: center;
+      padding: 36px 0 38px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: 16px;
+      color: var(--cih-blue-dark);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(40px, 6vw, 76px);
+      line-height: .92;
+      letter-spacing: -0.075em;
+      max-width: 760px;
+    }
+
+    h1 span { color: var(--cih-blue); }
+
+    .subhead {
+      margin: 22px 0 0;
+      font-size: 19px;
+      line-height: 1.65;
+      color: #3f4b5f;
+      max-width: 700px;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--cih-blue), var(--cih-blue-dark));
+      box-shadow: 0 18px 34px rgba(37,170,225,.34);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.76);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .stat small { color: var(--muted); font-weight: 700; }
+
+    .agent-card {
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(255,255,255,.86);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .agent-card:before {
+      content: "";
+      position: absolute;
+      inset: -90px -90px auto auto;
+      width: 220px;
+      height: 220px;
+      background: rgba(37,170,225,.2);
+      border-radius: 50%;
+    }
+
+    .agent-top {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+    }
+
+    .agent-id {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bot-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 20px;
+      background: #101827;
+      color: var(--cih-blue);
+      display: grid;
+      place-items: center;
+      font-weight: 950;
+      font-size: 20px;
+    }
+
+    .agent-id h3 { margin: 0; font-size: 17px; }
+    .agent-id p { margin: 3px 0 0; color: var(--muted); font-size: 13px; font-weight: 700; }
+
+    .status {
+      color: var(--success);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .chat-box {
+      position: relative;
+      background: #0f172a;
+      border-radius: 26px;
+      padding: 18px;
+      min-height: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      color: white;
+    }
+
+    .bubble {
+      max-width: 88%;
+      padding: 13px 15px;
+      border-radius: 18px;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .bubble.user {
+      align-self: flex-end;
+      background: var(--cih-blue);
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .bubble.bot {
+      align-self: flex-start;
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.12);
+      border-bottom-left-radius: 5px;
+    }
+
+    .quick-prompts {
+      margin-top: auto;
+      display: grid;
+      gap: 8px;
+    }
+
+    .prompt-btn {
+      width: 100%;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,.12);
+      color: #e5eef8;
+      background: rgba(255,255,255,.06);
+      padding: 12px 13px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .prompt-btn:hover { background: rgba(37,170,225,.2); }
+
+    section { padding: 38px 0; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 48px);
+      letter-spacing: -0.06em;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      max-width: 540px;
+      line-height: 1.6;
+      margin: 0;
+      font-weight: 650;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .sop-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      min-height: 210px;
+      transition: .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sop-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 34px rgba(15,23,42,.09);
+      border-color: rgba(37,170,225,.45);
+    }
+
+    .sop-card .tag {
+      display: inline-block;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--soft-blue);
+      color: var(--cih-blue-dark);
+      font-size: 12px;
+      font-weight: 950;
+      margin-bottom: 18px;
+    }
+
+    .sop-card h3 { margin: 0 0 10px; font-size: 18px; letter-spacing: -0.03em; }
+    .sop-card p { margin: 0; color: var(--muted); line-height: 1.55; font-weight: 600; font-size: 14px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel, .answer-panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: 0 18px 50px rgba(15,23,42,.07);
+      padding: 20px;
+    }
+
+    .panel label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 900;
+      font-size: 13px;
+      color: #334155;
+    }
+
+    select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 13px 14px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+    }
+
+    textarea { min-height: 120px; resize: vertical; }
+    select:focus, textarea:focus { border-color: var(--cih-blue); box-shadow: 0 0 0 4px rgba(37,170,225,.15); }
+
+    .field { margin-bottom: 14px; }
+
+    .answer-panel h3 { margin: 0 0 8px; font-size: 24px; letter-spacing: -0.04em; }
+    .answer-panel p { color: var(--muted); line-height: 1.65; font-weight: 600; }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .check-item {
+      display: flex;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+      border-radius: 16px;
+      color: #334155;
+      font-weight: 700;
+    }
+
+    .check-item span:first-child {
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex: none;
+      background: var(--soft-blue);
+      color: var(--cih-blue-dark);
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .output-actions { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .mini-btn {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      padding: 10px 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .mini-btn.blue { background: var(--cih-blue); color: white; border-color: var(--cih-blue); }
+
+    .automation-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .auto-card {
+      background: #101827;
+      color: white;
+      border-radius: 22px;
+      padding: 18px;
+      min-height: 160px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auto-card:after {
+      content: "";
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: rgba(37,170,225,.25);
+      position: absolute;
+      right: -30px;
+      top: -30px;
+    }
+
+    .auto-card small { color: #9ee7ff; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; }
+    .auto-card h3 { margin: 10px 0 8px; font-size: 17px; }
+    .auto-card p { margin: 0; color: #cbd5e1; line-height: 1.45; font-size: 13px; font-weight: 650; }
+
+    footer {
+      padding: 28px 0 48px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .workspace { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .automation-strip { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      header, .section-head { align-items: flex-start; flex-direction: column; }
+      .stats, .grid, .automation-strip { grid-template-columns: 1fr; }
+      .chat-box { min-height: 390px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">CIH</div>
+        <div>
+          <div>City Insight Houston</div>
+          <small style="color: var(--muted); font-weight: 800; letter-spacing: 0;">SOP Intelligence System</small>
+        </div>
+      </div>
+      <div class="pill">● Internal AI Agent</div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Trained on CIH Residential + Commercial SOPs</div>
+          <h1>Meet your <span>AI SOP Agent</span> for faster, cleaner real estate execution.</h1>
+          <p class="subhead">This page presents an internal-facing AI assistant concept built around City Insight Houston’s operating procedures. It helps agents know what to do next, which documents to collect, which CRM stage to update, and what automations should fire.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#agent">Ask the SOP Agent →</a>
+            <a class="btn btn-secondary" href="#knowledge">View SOP Knowledge Base</a>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong>8</strong><small>Core SOP Workflows</small></div>
+            <div class="stat"><strong>70+</strong><small>Process Phases</small></div>
+            <div class="stat"><strong>24/7</strong><small>Agent Guidance</small></div>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-top">
+            <div class="agent-id">
+              <div class="bot-avatar">AI</div>
+              <div>
+                <h3>CIH SOP Agent</h3>
+                <p>Residential • Commercial • Compliance • Automations</p>
+              </div>
+            </div>
+            <div class="status">Online</div>
+          </div>
+          <div class="chat-box">
+            <div class="bubble user">I just got a new buyer lead. What do I do first?</div>
+            <div class="bubble bot">Start with qualification: collect contact info, desired area, price range, financing status, timeline, and motivation. Then send the CIH Buyer Intake Form and schedule a Buyer Consultation.</div>
+            <div class="bubble user">What stage should they be in?</div>
+            <div class="bubble bot">Once the intake is complete and consultation is scheduled, tag them as “Qualified Buyer.” After the consultation and representation agreement, move them to “Active Buyer.”</div>
+            <div class="quick-prompts">
+              <button class="prompt-btn" onclick="loadPrompt('buyer')">Generate buyer next steps</button>
+              <button class="prompt-btn" onclick="loadPrompt('seller')">Create seller listing checklist</button>
+              <button class="prompt-btn" onclick="loadPrompt('commercial')">Explain commercial lease workflow</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="knowledge">
+        <div class="section-head">
+          <h2>SOP Knowledge Base</h2>
+          <p>The AI agent is organized around the major CIH service paths so agents can quickly get the right checklist, client script, document list, and CRM move.</p>
+        </div>
+        <div class="grid">
+          <div class="sop-card"><span class="tag">Residential</span><h3>Tenant Leasing</h3><p>Initial qualification, property list, tours, application, lease signing, move-in, review request, and commission packet.</p></div>
+          <div class="sop-card"><span class="tag">Residential</span><h3>Landlord Lease Listing</h3><p>Property intake, listing activation, inquiry management, tenant screening, lease execution, and renewal reminders.</p></div>
+          <div class="sop-card"><span class="tag">Residential</span><h3>Buyer Representation</h3><p>Buyer intake, consultation, home search, offer strategy, due diligence, closing, reviews, and 12-month nurture.</p></div>
+          <div class="sop-card"><span class="tag">Residential</span><h3>Seller Listing</h3><p>Listing presentation, pre-listing prep, launch, showings, open house strategy, negotiation, closing, and annual CMA follow-up.</p></div>
+          <div class="sop-card"><span class="tag">Commercial</span><h3>Tenant Leasing</h3><p>Needs assessment, market research, showings, LOI, lease review, COI, move-in, and renewal tracking.</p></div>
+          <div class="sop-card"><span class="tag">Commercial</span><h3>Landlord Leasing</h3><p>Property intake, launch on commercial platforms, lead qualification, LOI, lease execution, COI, and owner drip campaign.</p></div>
+          <div class="sop-card"><span class="tag">Commercial</span><h3>Buyer Representation</h3><p>Acquisition goals, property shortlist, LOI, contract, due diligence, financing, closing, and valuation follow-up.</p></div>
+          <div class="sop-card"><span class="tag">Commercial</span><h3>Seller Disposition</h3><p>Financial analysis, OM prep, NDA process, buyer qualification, offer summary, due diligence, closing, and investor nurture.</p></div>
+        </div>
+      </section>
+
+      <section id="agent">
+        <div class="section-head">
+          <h2>Ask the AI SOP Agent</h2>
+          <p>Choose a workflow and tell the agent what is happening. It will generate next steps, deliverables, CRM moves, and automation ideas.</p>
+        </div>
+        <div class="workspace">
+          <div class="panel">
+            <div class="field">
+              <label for="workflow">Workflow</label>
+              <select id="workflow">
+                <option value="buyer">Residential Buyer Representation</option>
+                <option value="seller">Residential Seller Listing</option>
+                <option value="tenant">Residential Tenant Leasing</option>
+                <option value="leaseListing">Residential Lease Listing / Landlord</option>
+                <option value="commercialTenant">Commercial Tenant Leasing</option>
+                <option value="commercialLandlord">Commercial Landlord Leasing</option>
+                <option value="commercialBuyer">Commercial Buyer Representation</option>
+                <option value="commercialSeller">Commercial Seller / Disposition</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="scenario">What is the situation?</label>
+              <textarea id="scenario" placeholder="Example: Buyer consultation is complete and they want to see homes this weekend."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="generateAnswer()">Generate SOP Guidance</button>
+          </div>
+
+          <div class="answer-panel">
+            <h3 id="answerTitle">SOP Guidance</h3>
+            <p id="answerIntro">Select a workflow and generate guidance to see the AI agent response.</p>
+            <div class="checklist" id="checklist"></div>
+            <div class="output-actions">
+              <button class="mini-btn blue" onclick="copyGuidance()">Copy Guidance</button>
+              <button class="mini-btn" onclick="resetGuidance()">Reset</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>Automation Brain</h2>
+        </div>
+        <div class="automation-strip">
+          <div class="auto-card"><small>Trigger</small><h3>Intake Form Submitted</h3><p>Create record or deal, notify agent/admin, and move contact into the correct pipeline.</p></div>
+          <div class="auto-card"><small>Trigger</small><h3>Contract / LOI Executed</h3><p>Start transaction tracking, notify broker or TC, and create compliance tasks.</p></div>
+          <div class="auto-card"><small>Trigger</small><h3>Listing Goes Live</h3><p>Launch social post, email blast, team notification, and seller/landlord update.</p></div>
+          <div class="auto-card"><small>Trigger</small><h3>Closing Funded</h3><p>Add to past client list, request review, and start post-close nurture campaign.</p></div>
+          <div class="auto-card"><small>Trigger</small><h3>Lease Expiration</h3><p>Send renewal reminder, re-list proposal, or buyer conversion campaign.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Confidential – Internal Use Only © City Insight Houston 2026 • SOP AI Agent concept page
+    </footer>
+  </div>
+
+  <script>
+    const guidance = {
+      buyer: {
+        title: "Residential Buyer Representation",
+        intro: "Use this when a buyer lead needs to be moved from inquiry to consultation, active search, offer, contract, and closing.",
+        items: [
+          "Collect full name, contact info, desired areas, price range, property type, financing status, timeline, and motivation.",
+          "Send the CIH Buyer Intake Form and schedule a Buyer Consultation in person or by Zoom.",
+          "After consultation, review search process, pre-approval, earnest money, option fee, inspection, and agency representation.",
+          "Collect signed Buyer Representation Agreement and Consumer Protection Notice, then create the buyer file.",
+          "CRM move: Qualified Buyer → Active Buyer → Offer Preparation → Under Contract → Closed Buyer.",
+          "Automation idea: when consultation is completed, add to Active Buyer pipeline and create showing/search tasks."
+        ]
+      },
+      seller: {
+        title: "Residential Seller Listing",
+        intro: "Use this when preparing a homeowner for listing, launch, open house, negotiation, closing, and post-close follow-up.",
+        items: [
+          "Schedule listing appointment and gather property details, upgrades, HOA, taxes, and recent improvements.",
+          "Prepare CMA, pricing strategy, CIH listing presentation, marketing plan, and communication plan.",
+          "Secure Listing Agreement and Seller’s Disclosure, then create the file and onboarding checklist.",
+          "Schedule professional photos, video, drone, staging/repair prep, yard sign, and MLS copy approval.",
+          "Open house strategy: schedule within first 7–10 days, invite neighbors 48 hours before, set up at least 10 directional signs, capture leads by QR form, and follow up within 24 hours.",
+          "Automation idea: when listing agreement is signed, create media and marketing tasks; when closing completes, send review link and 12-month follow-up."
+        ]
+      },
+      tenant: {
+        title: "Residential Tenant Leasing",
+        intro: "Use this when helping a renter from inquiry to property search, tours, application, lease signing, move-in, and future buyer nurture.",
+        items: [
+          "Respond within 5–15 minutes and collect move-in date, budget, area, bedrooms, pets, property type, credit, and income situation.",
+          "Send CIH Leasing Intake Form and explain that a personalized property list will follow.",
+          "Send 5–10 matching properties within 24 hours and confirm tour availability.",
+          "Help with application, supporting documents, deposits, lease signing, and executed lease storage.",
+          "Post move-in: send checklist, follow up after 3 days, request review, add to renter tips and future buyer campaign.",
+          "Automation idea: 9 months after move-in, send a 'Ready to Buy?' campaign."
+        ]
+      },
+      leaseListing: {
+        title: "Residential Lease Listing / Landlord",
+        intro: "Use this when representing a landlord or owner to lease a residential property.",
+        items: [
+          "Schedule listing consultation and collect property details, rent target, pet rules, utilities, parking, HOA, and access info.",
+          "Review rental market trends and execute Exclusive Right to Lease Agreement.",
+          "Schedule photos/video, upload to HAR and CIH channels, install CIH yard sign, and review listing accuracy within 24 hours.",
+          "Log every inquiry, follow up with prospects, and send weekly showing feedback to landlord.",
+          "Screen applicants with ID, income, rental history, credit/background, and landlord written selection.",
+          "Automation idea: 90 days before expiration, send renewal reminder to landlord."
+        ]
+      },
+      commercialTenant: {
+        title: "Commercial Tenant Leasing",
+        intro: "Use this when helping a business find and lease commercial space.",
+        items: [
+          "Schedule discovery and collect business type, space needs, location, budget, lease term, parking, visibility, and occupancy date.",
+          "Search LoopNet, HAR Commercial, CoStar, CREXI, and CIH listings; compare base rent, CAM, and total occupancy cost.",
+          "Tour top properties and discuss pros, cons, lease type, buildout needs, and deal breakers.",
+          "Draft LOI covering rent, term, TI allowance, CAM, utilities, signage, parking, and renewal terms.",
+          "After lease execution, confirm COI, utilities, keys, and move-in readiness.",
+          "Automation idea: 6 months before expiration, send renewal campaign."
+        ]
+      },
+      commercialLandlord: {
+        title: "Commercial Landlord Leasing",
+        intro: "Use this when representing a commercial property owner leasing space to tenants.",
+        items: [
+          "Walk property and collect square footage, suites, zoning, permitted uses, utilities, parking, signage, CAM/NNN/Gross lease type, and availability.",
+          "Verify ownership and execute Commercial Listing Agreement, then schedule media and gather floorplans/rent rolls.",
+          "Launch on HAR Commercial, LoopNet, CoStar, CREXI, CIH website, LinkedIn, email blast, and signage with QR code.",
+          "Respond to inquiries within 1 hour and qualify tenants by business type, size, budget, and lease term.",
+          "Collect commercial lease application, financials, draft LOI, negotiate, and coordinate lease execution.",
+          "Automation idea: when LOI is executed, notify broker and begin lease workflow."
+        ]
+      },
+      commercialBuyer: {
+        title: "Commercial Buyer Representation",
+        intro: "Use this when helping an investor or owner-occupant acquire a commercial property.",
+        items: [
+          "Hold strategy meeting and identify investment purpose, property type, area, budget, financing, timeline, ROI, and cap rate target.",
+          "Research property opportunities across LoopNet, CoStar, HAR Commercial, CREXI, MLS, and CIH off-market leads.",
+          "Evaluate zoning, access, parking, tenant mix, price per square foot, and property condition.",
+          "Draft LOI with purchase price, earnest money, inspection period, closing timeline, contingencies, repairs/credits, confidentiality, and exclusivity.",
+          "During due diligence, track inspections, Phase I ESA if needed, title, survey, zoning, lender, appraisal, and amendments.",
+          "Automation idea: when contract is executed, notify TC and start compliance setup."
+        ]
+      },
+      commercialSeller: {
+        title: "Commercial Seller / Investment Disposition",
+        intro: "Use this when representing a commercial owner or investor selling an asset.",
+        items: [
+          "Collect rent roll, P&L, operating expenses, leases, taxes, insurance, maintenance contracts, survey, environmental reports, and title documents.",
+          "Analyze NOI, cap rate, vacancy, sales comps, and income comps before recommending price.",
+          "Prepare OM with executive summary, financials, rent roll, market overview, tenant summary, and investment highlights.",
+          "Require NDA before sending full OM and qualify buyers with financial capability, proof of funds, or lender pre-qualification.",
+          "Present LOIs/offers in a side-by-side summary and track due diligence, deposits, appraisal, financing, closing, and funding.",
+          "Automation idea: when NDA is executed, send full OM and log inquiry; when closing funds, send review link and investor nurture."
+        ]
+      }
+    };
+
+    function generateAnswer() {
+      const selected = document.getElementById('workflow').value;
+      const scenario = document.getElementById('scenario').value.trim();
+      const data = guidance[selected];
+      document.getElementById('answerTitle').textContent = data.title;
+      document.getElementById('answerIntro').textContent = scenario ? `Scenario: ${scenario} — ${data.intro}` : data.intro;
+      const list = document.getElementById('checklist');
+      list.innerHTML = data.items.map((item, index) => `<div class="check-item"><span>${index + 1}</span><div>${item}</div></div>`).join('');
+    }
+
+    function resetGuidance() {
+      document.getElementById('scenario').value = '';
+      document.getElementById('answerTitle').textContent = 'SOP Guidance';
+      document.getElementById('answerIntro').textContent = 'Select a workflow and generate guidance to see the AI agent response.';
+      document.getElementById('checklist').innerHTML = '';
+    }
+
+    function copyGuidance() {
+      const title = document.getElementById('answerTitle').textContent;
+      const intro = document.getElementById('answerIntro').textContent;
+      const items = Array.from(document.querySelectorAll('.check-item div')).map((el, i) => `${i + 1}. ${el.textContent}`).join('\n');
+      navigator.clipboard.writeText(`${title}\n\n${intro}\n\n${items}`);
+      alert('SOP guidance copied.');
+    }
+
+    function loadPrompt(type) {
+      const map = {
+        buyer: ['buyer', 'Buyer consultation is complete and they are ready to start seeing homes.'],
+        seller: ['seller', 'Seller signed the listing agreement and we need to prepare for launch and open house.'],
+        commercial: ['commercialTenant', 'Commercial tenant identified a space and needs LOI guidance.']
+      };
+      document.getElementById('workflow').value = map[type][0];
+      document.getElementById('scenario').value = map[type][1];
+      generateAnswer();
+      document.getElementById('agent').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
