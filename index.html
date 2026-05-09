@@ -743,155 +743,66 @@
     </footer>
   </div>
 
-  <script>
-    const guidance = {
-      buyer: {
-        title: "Residential Buyer Representation",
-        intro: "Use this when a buyer lead needs to be moved from inquiry to consultation, active search, offer, contract, and closing.",
-        items: [
-          "Collect full name, contact info, desired areas, price range, property type, financing status, timeline, and motivation.",
-          "Send the CIH Buyer Intake Form and schedule a Buyer Consultation in person or by Zoom.",
-          "After consultation, review search process, pre-approval, earnest money, option fee, inspection, and agency representation.",
-          "Collect signed Buyer Representation Agreement and Consumer Protection Notice, then create the buyer file.",
-          "CRM move: Qualified Buyer → Active Buyer → Offer Preparation → Under Contract → Closed Buyer.",
-          "Automation idea: when consultation is completed, add to Active Buyer pipeline and create showing/search tasks."
-        ]
-      },
-      seller: {
-        title: "Residential Seller Listing",
-        intro: "Use this when preparing a homeowner for listing, launch, open house, negotiation, closing, and post-close follow-up.",
-        items: [
-          "Schedule listing appointment and gather property details, upgrades, HOA, taxes, and recent improvements.",
-          "Prepare CMA, pricing strategy, CIH listing presentation, marketing plan, and communication plan.",
-          "Secure Listing Agreement and Seller’s Disclosure, then create the file and onboarding checklist.",
-          "Schedule professional photos, video, drone, staging/repair prep, yard sign, and MLS copy approval.",
-          "Open house strategy: schedule within first 7–10 days, invite neighbors 48 hours before, set up at least 10 directional signs, capture leads by QR form, and follow up within 24 hours.",
-          "Automation idea: when listing agreement is signed, create media and marketing tasks; when closing completes, send review link and 12-month follow-up."
-        ]
-      },
-      tenant: {
-        title: "Residential Tenant Leasing",
-        intro: "Use this when helping a renter from inquiry to property search, tours, application, lease signing, move-in, and future buyer nurture.",
-        items: [
-          "Respond within 5–15 minutes and collect move-in date, budget, area, bedrooms, pets, property type, credit, and income situation.",
-          "Send CIH Leasing Intake Form and explain that a personalized property list will follow.",
-          "Send 5–10 matching properties within 24 hours and confirm tour availability.",
-          "Help with application, supporting documents, deposits, lease signing, and executed lease storage.",
-          "Post move-in: send checklist, follow up after 3 days, request review, add to renter tips and future buyer campaign.",
-          "Automation idea: 9 months after move-in, send a 'Ready to Buy?' campaign."
-        ]
-      },
-      leaseListing: {
-        title: "Residential Lease Listing / Landlord",
-        intro: "Use this when representing a landlord or owner to lease a residential property.",
-        items: [
-          "Schedule listing consultation and collect property details, rent target, pet rules, utilities, parking, HOA, and access info.",
-          "Review rental market trends and execute Exclusive Right to Lease Agreement.",
-          "Schedule photos/video, upload to HAR and CIH channels, install CIH yard sign, and review listing accuracy within 24 hours.",
-          "Log every inquiry, follow up with prospects, and send weekly showing feedback to landlord.",
-          "Screen applicants with ID, income, rental history, credit/background, and landlord written selection.",
-          "Automation idea: 90 days before expiration, send renewal reminder to landlord."
-        ]
-      },
-      commercialTenant: {
-        title: "Commercial Tenant Leasing",
-        intro: "Use this when helping a business find and lease commercial space.",
-        items: [
-          "Schedule discovery and collect business type, space needs, location, budget, lease term, parking, visibility, and occupancy date.",
-          "Search LoopNet, HAR Commercial, CoStar, CREXI, and CIH listings; compare base rent, CAM, and total occupancy cost.",
-          "Tour top properties and discuss pros, cons, lease type, buildout needs, and deal breakers.",
-          "Draft LOI covering rent, term, TI allowance, CAM, utilities, signage, parking, and renewal terms.",
-          "After lease execution, confirm COI, utilities, keys, and move-in readiness.",
-          "Automation idea: 6 months before expiration, send renewal campaign."
-        ]
-      },
-      commercialLandlord: {
-        title: "Commercial Landlord Leasing",
-        intro: "Use this when representing a commercial property owner leasing space to tenants.",
-        items: [
-          "Walk property and collect square footage, suites, zoning, permitted uses, utilities, parking, signage, CAM/NNN/Gross lease type, and availability.",
-          "Verify ownership and execute Commercial Listing Agreement, then schedule media and gather floorplans/rent rolls.",
-          "Launch on HAR Commercial, LoopNet, CoStar, CREXI, CIH website, LinkedIn, email blast, and signage with QR code.",
-          "Respond to inquiries within 1 hour and qualify tenants by business type, size, budget, and lease term.",
-          "Collect commercial lease application, financials, draft LOI, negotiate, and coordinate lease execution.",
-          "Automation idea: when LOI is executed, notify broker and begin lease workflow."
-        ]
-      },
-      commercialBuyer: {
-        title: "Commercial Buyer Representation",
-        intro: "Use this when helping an investor or owner-occupant acquire a commercial property.",
-        items: [
-          "Hold strategy meeting and identify investment purpose, property type, area, budget, financing, timeline, ROI, and cap rate target.",
-          "Research property opportunities across LoopNet, CoStar, HAR Commercial, CREXI, MLS, and CIH off-market leads.",
-          "Evaluate zoning, access, parking, tenant mix, price per square foot, and property condition.",
-          "Draft LOI with purchase price, earnest money, inspection period, closing timeline, contingencies, repairs/credits, confidentiality, and exclusivity.",
-          "During due diligence, track inspections, Phase I ESA if needed, title, survey, zoning, lender, appraisal, and amendments.",
-          "Automation idea: when contract is executed, notify TC and start compliance setup."
-        ]
-      },
-      commercialSeller: {
-        title: "Commercial Seller / Investment Disposition",
-        intro: "Use this when representing a commercial owner or investor selling an asset.",
-        items: [
-          "Collect rent roll, P&L, operating expenses, leases, taxes, insurance, maintenance contracts, survey, environmental reports, and title documents.",
-          "Analyze NOI, cap rate, vacancy, sales comps, and income comps before recommending price.",
-          "Prepare OM with executive summary, financials, rent roll, market overview, tenant summary, and investment highlights.",
-          "Require NDA before sending full OM and qualify buyers with financial capability, proof of funds, or lender pre-qualification.",
-          "Present LOIs/offers in a side-by-side summary and track due diligence, deposits, appraisal, financing, closing, and funding.",
-          "Automation idea: when NDA is executed, send full OM and log inquiry; when closing funds, send review link and investor nurture."
-        ]
-      }
-    };
+ <script>
 
-   export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).send("Method not allowed");
+async function askAI() {
+
+  const scenario =
+    document.getElementById("scenario").value.trim();
+
+  const workflow =
+    document.getElementById("workflow").value;
+
+  if (!scenario) {
+    alert("Please enter a question first.");
+    return;
   }
 
-  try {
-    const { message } = req.body;
+  document.getElementById("answerTitle").textContent =
+    "CIH AI is thinking...";
 
-    const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+  document.getElementById("answerIntro").textContent =
+    "Reviewing SOP systems and generating guidance...";
+
+  document.getElementById("checklist").innerHTML = "";
+
+  try {
+
+    const response = await fetch("/api/chat", {
       method: "POST",
+
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+        "Content-Type": "application/json"
       },
+
       body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: "You are CIH SOP Agent for City Insight Houston. Give clear real estate SOP guidance. Include next steps, documents needed, CRM stage, and follow-up task when relevant."
-          },
-          {
-            role: "user",
-            content: message
-          }
-        ],
-        temperature: 0.4
+        message:
+          `Workflow: ${workflow}\nSituation: ${scenario}`
       })
     });
 
-    const data = await openaiResponse.json();
+    const data = await response.json();
 
-    if (!openaiResponse.ok) {
-      return res.status(500).json({
-        error: data.error?.message || "OpenAI request failed"
-      });
-    }
+    document.getElementById("answerTitle").textContent =
+      "CIH AI Response";
 
-    const answer = data.choices?.[0]?.message?.content || "No answer returned.";
-
-    return res.status(200).json({ answer });
+    document.getElementById("answerIntro").textContent =
+      data.answer || "No response returned.";
 
   } catch (error) {
-    return res.status(500).json({
-      error: "Server error",
-      details: error.message
-    });
+
+    document.getElementById("answerTitle").textContent =
+      "Connection Error";
+
+    document.getElementById("answerIntro").textContent =
+      "The AI agent could not connect.";
+
+    console.error(error);
+
   }
+
 }
-  </script>
+
+</script>
 </body>
 </html>
