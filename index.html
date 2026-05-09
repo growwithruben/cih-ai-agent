@@ -843,76 +843,53 @@
       }
     };
 
-    function generateAnswer() {
-      const selected = document.getElementById('workflow').value;
-      const scenario = document.getElementById('scenario').value.trim();
-      const data = guidance[selected];
-
-      document.getElementById('answerTitle').textContent = data.title;
-      document.getElementById('answerIntro').textContent = scenario ? `Scenario: ${scenario} — ${data.intro}` : data.intro;
-
-      const list = document.getElementById('checklist');
-      list.innerHTML = data.items.map((item, index) => `<div class="check-item"><span>${index + 1}</span><div>${item}</div></div>`).join('');
-    }
-
-    function resetGuidance() {
-      document.getElementById('scenario').value = '';
-      document.getElementById('answerTitle').textContent = 'SOP Guidance';
-      document.getElementById('answerIntro').textContent = 'Select a workflow and generate guidance to see the AI agent response.';
-      document.getElementById('checklist').innerHTML = '';
-    }
-
-    function copyGuidance() {
-      const title = document.getElementById('answerTitle').textContent;
-      const intro = document.getElementById('answerIntro').textContent;
-      const items = Array.from(document.querySelectorAll('.check-item div')).map((el, i) => `${i + 1}. ${el.textContent}`).join('\n');
-      navigator.clipboard.writeText(`${title}\n\n${intro}\n\n${items}`);
-      alert('SOP guidance copied.');
-    }
-
-    function loadPrompt(type) {
-      const map = {
-        buyer: ['buyer', 'Buyer consultation is complete and they are ready to start seeing homes.'],
-        seller: ['seller', 'Seller signed the listing agreement and we need to prepare for launch and open house.'],
-        commercial: ['commercialTenant', 'Commercial tenant identified a space and needs LOI guidance.']
-      };
-
-      document.getElementById('workflow').value = map[type][0];
-      document.getElementById('scenario').value = map[type][1];
-      generateAnswer();
-      document.getElementById('agent').scrollIntoView({ behavior: 'smooth' });
-    }
-    async function askAI() {
-  const scenario = document.getElementById("scenario").value.trim();
-  const workflow = document.getElementById("workflow").value;
-
-  if (!scenario) {
-    alert("Type a question or situation first.");
-    return;
+   export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).send("Method not allowed");
   }
 
-  document.getElementById("answerTitle").textContent = "CIH AI is thinking...";
-  document.getElementById("answerIntro").textContent = "Reviewing the SOP guidance...";
-  document.getElementById("checklist").innerHTML = "";
-
   try {
-    const response = await fetch("/api/chat", {
+    const { message } = req.body;
+
+    const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        message: `Workflow: ${workflow}\nSituation: ${scenario}`
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "You are CIH SOP Agent for City Insight Houston. Give clear real estate SOP guidance. Include next steps, documents needed, CRM stage, and follow-up task when relevant."
+          },
+          {
+            role: "user",
+            content: message
+          }
+        ],
+        temperature: 0.4
       })
     });
 
-    const data = await response.json();
+    const data = await openaiResponse.json();
 
-    document.getElementById("answerTitle").textContent = "CIH AI Response";
-    document.getElementById("answerIntro").textContent = data.answer || "No answer received.";
+    if (!openaiResponse.ok) {
+      return res.status(500).json({
+        error: data.error?.message || "OpenAI request failed"
+      });
+    }
+
+    const answer = data.choices?.[0]?.message?.content || "No answer returned.";
+
+    return res.status(200).json({ answer });
+
   } catch (error) {
-    document.getElementById("answerTitle").textContent = "Error";
-    document.getElementById("answerIntro").textContent = "The AI connection failed.";
+    return res.status(500).json({
+      error: "Server error",
+      details: error.message
+    });
   }
 }
   </script>
