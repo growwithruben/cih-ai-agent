@@ -706,7 +706,7 @@
               <textarea id="scenario" placeholder="Example: Buyer consultation is complete and they want to see homes this weekend."></textarea>
             </div>
 
-            <button class="btn btn-primary" onclick="generateAnswer()">Generate SOP Guidance</button>
+            <button class="btn btn-primary" onclick="askAI()">Ask CIH AI</button>
           </div>
 
           <div class="answer-panel">
@@ -882,6 +882,39 @@
       generateAnswer();
       document.getElementById('agent').scrollIntoView({ behavior: 'smooth' });
     }
+    async function askAI() {
+  const scenario = document.getElementById("scenario").value.trim();
+  const workflow = document.getElementById("workflow").value;
+
+  if (!scenario) {
+    alert("Type a question or situation first.");
+    return;
+  }
+
+  document.getElementById("answerTitle").textContent = "CIH AI is thinking...";
+  document.getElementById("answerIntro").textContent = "Reviewing the SOP guidance...";
+  document.getElementById("checklist").innerHTML = "";
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: `Workflow: ${workflow}\nSituation: ${scenario}`
+      })
+    });
+
+    const data = await response.json();
+
+    document.getElementById("answerTitle").textContent = "CIH AI Response";
+    document.getElementById("answerIntro").textContent = data.answer || "No answer received.";
+  } catch (error) {
+    document.getElementById("answerTitle").textContent = "Error";
+    document.getElementById("answerIntro").textContent = "The AI connection failed.";
+  }
+}
   </script>
 </body>
 </html>
