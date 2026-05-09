@@ -599,6 +599,44 @@
         min-height: auto;
       }
     }
+    #answerIntro {
+  white-space: normal;
+  line-height: 1.8;
+  color: #334155;
+}
+
+#answerIntro h3 {
+  margin: 26px 0 14px;
+  font-size: 24px;
+  color: #111827;
+  letter-spacing: -0.03em;
+}
+
+#answerIntro h4 {
+  margin: 22px 0 10px;
+  font-size: 19px;
+  color: #0C6489;
+}
+
+#answerIntro strong {
+  color: #111827;
+}
+
+#answerIntro li {
+  margin: 10px 0 10px 24px;
+  color: #334155;
+}
+
+#answerIntro br {
+  margin-bottom: 10px;
+}
+
+#answerIntro {
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+}
   </style>
 </head>
 
@@ -801,7 +839,15 @@ async function askAI() {
   }
 
 }
-
+function formatAIResponse(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/### (.*?)(\n|$)/g, "<h3>$1</h3>")
+    .replace(/#### (.*?)(\n|$)/g, "<h4>$1</h4>")
+    .replace(/- (.*?)(\n|$)/g, "<li>$1</li>")
+    .replace(/\n\n/g, "<br><br>")
+    .replace(/\n/g, "<br>");
+}
 </script>
 </body>
 </html>
