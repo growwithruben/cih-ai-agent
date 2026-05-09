@@ -787,8 +787,7 @@ async function askAI() {
       "CIH AI Response";
 
     document.getElementById("answerIntro").textContent =
-      data.answer || "No response returned.";
-
+  data.answer || data.error || "No response returned.";
   } catch (error) {
 
     document.getElementById("answerTitle").textContent =
