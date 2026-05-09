@@ -1,45 +1,67 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).send("Method not allowed");
   }
 
   try {
-    const { message } = req.body;
+    const { message } = req.body || {};
 
-    const response = await fetch("https://api.openai.com/v1/responses", {
+    if (!message) {
+      return res.status(400).json({
+        error: "No message provided"
+      });
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({
+        error: "OPENAI_API_KEY is missing in Vercel"
+      });
+    }
+
+    const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4.1-mini",
-        input: [
+        model: "gpt-4o-mini",
+        messages: [
           {
             role: "system",
-            content:
-              "You are CIH SOP Agent for City Insight Houston. Answer questions using real estate SOP-style guidance. Be clear, step-by-step, and practical. Include next steps, documents needed, CRM stage, and follow-up task when relevant.",
+            content: "You are CIH SOP Agent for City Insight Houston. Give clear real estate SOP guidance. Include next steps, documents needed, CRM stage, and follow-up task when relevant. If you are unsure, say what information is needed."
           },
           {
             role: "user",
-            content: message,
-          },
+            content: message
+          }
         ],
-      }),
+        temperature: 0.4
+      })
     });
 
-    const data = await response.json();
+    const data = await openaiResponse.json();
+
+    if (!openaiResponse.ok) {
+      return res.status(500).json({
+        error: data.error?.message || "OpenAI request failed"
+      });
+    }
 
     const answer =
-      data.output_text ||
-      data.output?.[0]?.content?.[0]?.text ||
-      "I could not generate a response.";
+      data.choices &&
+      data.choices[0] &&
+      data.choices[0].message &&
+      data.choices[0].message.content
+        ? data.choices[0].message.content
+        : "No answer returned from OpenAI.";
 
     return res.status(200).json({ answer });
+
   } catch (error) {
     return res.status(500).json({
-      error: "AI request failed",
-      details: error.message,
+      error: "Server error",
+      details: error.message
     });
   }
 }
