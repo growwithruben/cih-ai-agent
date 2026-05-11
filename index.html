@@ -783,70 +783,56 @@
 
  <script>
 
-async function askAI() {
-
-  const scenario =
-    document.getElementById("scenario").value.trim();
-
-  const workflow =
-    document.getElementById("workflow").value;
-
-  if (!scenario) {
-    alert("Please enter a question first.");
-    return;
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).send("Method not allowed");
   }
 
-  document.getElementById("answerTitle").textContent =
-    "CIH AI is thinking...";
-
-  document.getElementById("answerIntro").textContent =
-    "Reviewing SOP systems and generating guidance...";
-
-  document.getElementById("checklist").innerHTML = "";
-
   try {
+    const { message } = req.body || {};
 
-    const response = await fetch("https://ai.cityinsighthouston.com/api/chat", {
+    if (!message) {
+      return res.status(400).json({ error: "No message provided" });
+    }
+
+    const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
-
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
-
       body: JSON.stringify({
-        message:
-          `Workflow: ${workflow}\nSituation: ${scenario}`
+        model: "gpt-4o-mini",
+        input: message,
+        instructions:
+          "You are the CIH SOP Agent for City Insight Houston. Answer using the uploaded CIH SOP knowledge base whenever possible. Give clear step-by-step guidance. Include next steps, documents needed, CRM stage, follow-up task, and compliance reminders when relevant. If the SOP does not contain the answer, say that clearly and suggest what information is needed.",
+        tools: [
+          {
+            type: "file_search",
+            vector_store_ids: [process.env.OPENAI_VECTOR_STORE_ID]
+          }
+        ]
       })
     });
 
     const data = await response.json();
 
-    document.getElementById("answerTitle").textContent =
-      "CIH AI Response";
+    if (!response.ok) {
+      return res.status(500).json({
+        error: data.error?.message || "OpenAI SOP search failed"
+      });
+    }
 
-    document.getElementById("answerIntro").innerHTML =
-  formatAIResponse(data.answer || data.error || "No response returned.");
+    return res.status(200).json({
+      answer: data.output_text || "No SOP answer returned."
+    });
+
   } catch (error) {
-
-    document.getElementById("answerTitle").textContent =
-      "Connection Error";
-
-    document.getElementById("answerIntro").textContent =
-      "The AI agent could not connect.";
-
-    console.error(error);
-
+    return res.status(500).json({
+      error: "Server error",
+      details: error.message
+    });
   }
-
-}
-function formatAIResponse(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/### (.*?)(\n|$)/g, "<h3>$1</h3>")
-    .replace(/#### (.*?)(\n|$)/g, "<h4>$1</h4>")
-    .replace(/- (.*?)(\n|$)/g, "<li>$1</li>")
-    .replace(/\n\n/g, "<br><br>")
-    .replace(/\n/g, "<br>");
 }
 </script>
 </body>
