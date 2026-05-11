@@ -75,8 +75,15 @@ Do not give generic answers when the user asks what is listed in the SOPs.`
       });
     }
 
-    return res.status(200).json({
-      answer: data.output_text || "No SOP answer returned.",
+    const answer =
+  data.output_text ||
+  data.output?.[0]?.content?.[0]?.text ||
+  data.output?.[1]?.content?.[0]?.text ||
+  JSON.stringify(data, null, 2);
+
+return res.status(200).json({
+  answer
+});
       debug: {
         responseId: data.id,
         outputTypes: data.output?.map(item => item.type) || [],
