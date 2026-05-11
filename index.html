@@ -3,851 +3,621 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIH SOP AI Agent</title>
-  <link rel="icon" href="./assets/logo.png">
+  <title>CIH OS AI Agent</title>
+
+  <link rel="icon" href="assets/logo.png">
 
   <style>
-    :root {
-      --cih-blue: #25aae1;
-      --cih-blue-dark: #0C6489;
-      --ink: #111827;
-      --muted: #6b7280;
-      --line: #e5e7eb;
-      --bg: #f5f8fb;
-      --card: #ffffff;
-      --soft-blue: #e9f7fd;
-      --success: #10b981;
-      --radius: 22px;
-      --shadow: 0 22px 60px rgba(15, 23, 42, 0.12);
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    * { box-sizing: border-box; }
-
     body {
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(37,170,225,.22), transparent 34%),
-        linear-gradient(180deg, #ffffff 0%, var(--bg) 62%, #eef6fb 100%);
-      color: var(--ink);
+      font-family: Inter, Arial, sans-serif;
+      background: #f3f7fb;
+      color: #111827;
       overflow-x: hidden;
     }
 
-    a { color: inherit; }
-
-    .page {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
+    .container {
+      width: min(1200px, calc(100% - 32px));
+      margin: auto;
+      padding: 30px 0 60px;
     }
 
     header {
-      padding: 28px 0 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 18px;
+      gap: 20px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
+      gap: 16px;
     }
 
-    .brand-logo {
-      width: 74px;
+    .brand img {
+      width: 85px;
       height: auto;
-      display: block;
     }
 
-    .brand-title {
-      line-height: 1.05;
-    }
-
-    .brand-title div {
-      font-size: 20px;
+    .brand-text h1 {
+      font-size: 28px;
       letter-spacing: -0.04em;
     }
 
-    .brand-title small {
-      color: var(--muted);
-      font-weight: 800;
-      letter-spacing: 0;
+    .brand-text p {
+      color: #64748b;
+      font-weight: 600;
+      margin-top: 4px;
     }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border: 1px solid rgba(37,170,225,.28);
+    .badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 12px 18px;
       border-radius: 999px;
-      background: rgba(255,255,255,.72);
-      color: var(--cih-blue-dark);
-      font-size: 13px;
       font-weight: 800;
-      backdrop-filter: blur(10px);
-      white-space: nowrap;
+      font-size: 14px;
     }
 
     .hero {
       display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 28px;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
       align-items: center;
-      padding: 36px 0 38px;
+      margin-bottom: 50px;
     }
 
-    .eyebrow {
-      display: inline-flex;
-      margin-bottom: 16px;
-      color: var(--cih-blue-dark);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      font-size: 12px;
+    .hero-left h2 {
+      font-size: clamp(40px, 6vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      margin-bottom: 20px;
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(40px, 6vw, 76px);
-      line-height: .92;
-      letter-spacing: -0.075em;
-      max-width: 760px;
+    .hero-left h2 span {
+      color: #25aae1;
     }
 
-    h1 span { color: var(--cih-blue); }
-
-    .subhead {
-      margin: 22px 0 0;
-      font-size: 19px;
-      line-height: 1.65;
-      color: #3f4b5f;
-      max-width: 700px;
+    .hero-left p {
+      color: #475569;
+      font-size: 18px;
+      line-height: 1.7;
+      margin-bottom: 26px;
     }
 
-    .cta-row {
+    .hero-buttons {
       display: flex;
+      gap: 14px;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 28px;
     }
 
     .btn {
-      border: 0;
+      border: none;
       border-radius: 999px;
-      padding: 14px 20px;
-      font-size: 15px;
-      font-weight: 900;
+      padding: 15px 22px;
+      font-weight: 800;
       cursor: pointer;
       transition: .2s ease;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 15px;
     }
 
     .btn-primary {
+      background: linear-gradient(135deg,#25aae1,#0C6489);
       color: white;
-      background: linear-gradient(135deg, var(--cih-blue), var(--cih-blue-dark));
-      box-shadow: 0 18px 34px rgba(37,170,225,.34);
+      box-shadow: 0 16px 40px rgba(37,170,225,.25);
     }
 
     .btn-secondary {
-      background: #fff;
-      color: var(--ink);
-      border: 1px solid var(--line);
+      background: white;
+      border: 1px solid #dbe3ea;
+      color: #111827;
     }
 
-    .btn:hover { transform: translateY(-2px); }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 28px;
+    .btn:hover {
+      transform: translateY(-2px);
     }
 
-    .stat {
-      padding: 16px;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.76);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 24px;
-      letter-spacing: -0.04em;
-    }
-
-    .stat small { color: var(--muted); font-weight: 700; }
-
-    .agent-card {
-      background: rgba(255,255,255,.88);
-      border: 1px solid rgba(255,255,255,.86);
-      border-radius: 32px;
-      box-shadow: var(--shadow);
-      padding: 18px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .agent-card:before {
-      content: "";
-      position: absolute;
-      inset: -90px -90px auto auto;
-      width: 220px;
-      height: 220px;
-      background: rgba(37,170,225,.2);
-      border-radius: 50%;
-    }
-
-    .agent-top {
-      position: relative;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px;
-    }
-
-    .agent-id {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .bot-avatar {
-      width: 58px;
-      height: 58px;
-      border-radius: 20px;
-      background: #101827;
-      color: var(--cih-blue);
-      display: grid;
-      place-items: center;
-      font-weight: 950;
-      font-size: 20px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.18);
-    }
-
-    .agent-id h3 { margin: 0; font-size: 17px; }
-
-    .agent-id p {
-      margin: 3px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .status {
-      color: var(--success);
-      font-weight: 900;
-      font-size: 13px;
-    }
-
-    .chat-box {
-      position: relative;
+    .chat-preview {
       background: #0f172a;
-      border-radius: 26px;
-      padding: 18px;
-      min-height: 440px;
+      border-radius: 30px;
+      padding: 22px;
+      color: white;
+      min-height: 460px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      color: white;
+      gap: 14px;
+      box-shadow: 0 25px 60px rgba(15,23,42,.2);
+    }
+
+    .chat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .chat-agent {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .ai-square {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: #111827;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .ai-square img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .chat-agent h3 {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .chat-agent p {
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .online {
+      color: #22c55e;
+      font-weight: 800;
+      font-size: 14px;
     }
 
     .bubble {
-      max-width: 88%;
-      padding: 13px 15px;
+      padding: 15px 18px;
       border-radius: 18px;
-      line-height: 1.45;
+      max-width: 90%;
+      line-height: 1.6;
       font-size: 14px;
     }
 
     .bubble.user {
+      background: #25aae1;
       align-self: flex-end;
-      background: var(--cih-blue);
-      color: white;
-      border-bottom-right-radius: 5px;
+      border-bottom-right-radius: 4px;
     }
 
-    .bubble.bot {
+    .bubble.ai {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.08);
       align-self: flex-start;
-      background: rgba(255,255,255,.09);
-      border: 1px solid rgba(255,255,255,.12);
-      border-bottom-left-radius: 5px;
-    }
-
-    .quick-prompts {
-      margin-top: auto;
-      display: grid;
-      gap: 8px;
-    }
-
-    .prompt-btn {
-      width: 100%;
-      text-align: left;
-      border: 1px solid rgba(255,255,255,.12);
-      color: #e5eef8;
-      background: rgba(255,255,255,.06);
-      padding: 12px 13px;
-      border-radius: 16px;
-      cursor: pointer;
-      font-weight: 750;
-    }
-
-    .prompt-btn:hover { background: rgba(37,170,225,.2); }
-
-    section { padding: 38px 0; }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      align-items: end;
-      margin-bottom: 18px;
-    }
-
-    .section-head h2 {
-      margin: 0;
-      font-size: clamp(30px, 4vw, 48px);
-      letter-spacing: -0.06em;
-    }
-
-    .section-head p {
-      color: var(--muted);
-      max-width: 540px;
-      line-height: 1.6;
-      margin: 0;
-      font-weight: 650;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-    }
-
-    .sop-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 20px;
-      min-height: 210px;
-      transition: .2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .sop-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 18px 34px rgba(15,23,42,.09);
-      border-color: rgba(37,170,225,.45);
-    }
-
-    .sop-card .tag {
-      display: inline-block;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: var(--soft-blue);
-      color: var(--cih-blue-dark);
-      font-size: 12px;
-      font-weight: 950;
-      margin-bottom: 18px;
-    }
-
-    .sop-card h3 { margin: 0 0 10px; font-size: 18px; letter-spacing: -0.03em; }
-
-    .sop-card p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.55;
-      font-weight: 600;
-      font-size: 14px;
+      border-bottom-left-radius: 4px;
     }
 
     .workspace {
       display: grid;
       grid-template-columns: 360px 1fr;
-      gap: 18px;
-      align-items: start;
+      gap: 24px;
+      margin-top: 50px;
     }
 
-    .panel, .answer-panel {
+    .panel,
+    .response-panel {
       background: white;
-      border: 1px solid var(--line);
       border-radius: 28px;
-      box-shadow: 0 18px 50px rgba(15,23,42,.07);
-      padding: 20px;
+      padding: 26px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 18px 50px rgba(15,23,42,.06);
     }
 
-    .panel label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 900;
-      font-size: 13px;
-      color: #334155;
-    }
-
-    select, textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 13px 14px;
-      font: inherit;
-      color: var(--ink);
-      background: #fff;
-      outline: none;
-    }
-
-    textarea { min-height: 120px; resize: vertical; }
-
-    select:focus, textarea:focus {
-      border-color: var(--cih-blue);
-      box-shadow: 0 0 0 4px rgba(37,170,225,.15);
-    }
-
-    .field { margin-bottom: 14px; }
-
-    .answer-panel h3 {
-      margin: 0 0 8px;
-      font-size: 24px;
+    .panel h3,
+    .response-panel h3 {
+      margin-bottom: 18px;
+      font-size: 28px;
       letter-spacing: -0.04em;
     }
 
-    .answer-panel p {
-      color: var(--muted);
-      line-height: 1.65;
-      font-weight: 600;
+    .field {
+      margin-bottom: 18px;
     }
 
-    .checklist {
-      display: grid;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .check-item {
-      display: flex;
-      gap: 10px;
-      align-items: start;
-      padding: 12px;
-      background: #f8fafc;
-      border: 1px solid #eef2f7;
-      border-radius: 16px;
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 800;
       color: #334155;
-      font-weight: 700;
     }
 
-    .check-item span:first-child {
-      width: 23px;
-      height: 23px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      flex: none;
-      background: var(--soft-blue);
-      color: var(--cih-blue-dark);
-      font-size: 13px;
-      font-weight: 950;
+    select,
+    textarea {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid #dbe3ea;
+      padding: 14px 16px;
+      font-family: inherit;
+      font-size: 15px;
+      outline: none;
+      background: white;
     }
 
-    .output-actions {
-      margin-top: 18px;
+    select:focus,
+    textarea:focus {
+      border-color: #25aae1;
+      box-shadow: 0 0 0 4px rgba(37,170,225,.12);
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    #answerTitle {
+      margin-bottom: 16px;
+    }
+
+    #answerIntro {
+      white-space: normal;
+      line-height: 1.9;
+      color: #334155;
+      background: #f8fafc;
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid #e5e7eb;
+      min-height: 300px;
+    }
+
+    #answerIntro h3 {
+      margin: 28px 0 14px;
+      font-size: 24px;
+      color: #111827;
+      letter-spacing: -0.03em;
+    }
+
+    #answerIntro h4 {
+      margin: 22px 0 12px;
+      font-size: 19px;
+      color: #0C6489;
+    }
+
+    #answerIntro strong {
+      color: #111827;
+    }
+
+    #answerIntro li {
+      margin: 10px 0 10px 24px;
+    }
+
+    .response-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
+      margin-top: 20px;
       flex-wrap: wrap;
     }
 
-    .mini-btn {
-      border: 1px solid var(--line);
+    .small-btn {
+      border: 1px solid #dbe3ea;
       background: white;
+      padding: 12px 16px;
       border-radius: 999px;
-      padding: 10px 13px;
-      font-weight: 900;
       cursor: pointer;
-    }
-
-    .mini-btn.blue {
-      background: var(--cih-blue);
-      color: white;
-      border-color: var(--cih-blue);
-    }
-
-    .automation-strip {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-    }
-
-    .auto-card {
-      background: #101827;
-      color: white;
-      border-radius: 22px;
-      padding: 18px;
-      min-height: 160px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .auto-card:after {
-      content: "";
-      width: 86px;
-      height: 86px;
-      border-radius: 50%;
-      background: rgba(37,170,225,.25);
-      position: absolute;
-      right: -30px;
-      top: -30px;
-    }
-
-    .auto-card small {
-      color: #9ee7ff;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-    }
-
-    .auto-card h3 { margin: 10px 0 8px; font-size: 17px; }
-
-    .auto-card p {
-      margin: 0;
-      color: #cbd5e1;
-      line-height: 1.45;
-      font-size: 13px;
-      font-weight: 650;
+      font-weight: 800;
     }
 
     footer {
-      padding: 28px 0 48px;
-      color: var(--muted);
+      margin-top: 60px;
+      text-align: center;
+      color: #64748b;
       font-size: 13px;
       font-weight: 700;
-      text-align: center;
     }
 
     @media (max-width: 980px) {
-      .hero, .workspace { grid-template-columns: 1fr; }
-      .grid { grid-template-columns: repeat(2, 1fr); }
-      .automation-strip { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 760px) {
-      .page { width: min(100% - 24px, 1180px); }
-
-      header, .section-head {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .brand { align-items: flex-start; }
-
-      .brand-logo { width: 64px; }
-
-      .brand-title div { font-size: 18px; }
-
-      .pill { white-space: normal; }
-
-      .hero { padding-top: 24px; }
-
-      h1 { font-size: clamp(36px, 12vw, 56px); }
-
-      .subhead { font-size: 17px; }
-
-      .stats, .grid, .automation-strip {
+      .hero,
+      .workspace {
         grid-template-columns: 1fr;
       }
-
-      .agent-top {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .chat-box { min-height: 390px; }
-
-      .bubble { max-width: 100%; }
-
-      .cta-row .btn {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .output-actions .mini-btn { width: 100%; }
     }
 
-    @media (max-width: 480px) {
-      section { padding: 28px 0; }
+    @media (max-width: 640px) {
 
-      .agent-card,
+      .container {
+        width: calc(100% - 22px);
+      }
+
+      .hero-left h2 {
+        font-size: 48px;
+      }
+
       .panel,
-      .answer-panel {
+      .response-panel,
+      .chat-preview {
         border-radius: 22px;
-        padding: 15px;
       }
 
-      .chat-box {
-        border-radius: 20px;
-        padding: 14px;
+      .hero-buttons .btn {
+        width: 100%;
       }
 
-      .sop-card,
-      .auto-card {
-        min-height: auto;
-      }
     }
-    #answerIntro {
-  white-space: normal;
-  line-height: 1.8;
-  color: #334155;
-}
 
-#answerIntro h3 {
-  margin: 26px 0 14px;
-  font-size: 24px;
-  color: #111827;
-  letter-spacing: -0.03em;
-}
-
-#answerIntro h4 {
-  margin: 22px 0 10px;
-  font-size: 19px;
-  color: #0C6489;
-}
-
-#answerIntro strong {
-  color: #111827;
-}
-
-#answerIntro li {
-  margin: 10px 0 10px 24px;
-  color: #334155;
-}
-
-#answerIntro br {
-  margin-bottom: 10px;
-}
-
-#answerIntro {
-  background: #f8fafc;
-  padding: 24px;
-  border-radius: 20px;
-  border: 1px solid #e5e7eb;
-}
   </style>
 </head>
-
 <body>
-  <div class="page">
+
+  <div class="container">
+
     <header>
+
       <div class="brand">
-        <img src="assets/logo.png" class="brand-logo" alt="City Insight Houston Logo">
-        <div class="brand-title">
-          <div>City Insight Houston</div>
-          <small>SOP Intelligence System</small>
+        <img src="assets/logo.png" alt="CIH Logo">
+
+        <div class="brand-text">
+          <h1>City Insight Houston</h1>
+          <p>SOP Intelligence System</p>
         </div>
       </div>
-      <div class="pill">● Internal AI Agent</div>
+
+      <div class="badge">
+        ● Internal AI Agent
+      </div>
+
     </header>
 
-    <main>
-      <section class="hero">
-        <div>
-          <div class="eyebrow">Trained on CIH Residential + Commercial SOPs</div>
-          <h1>Meet your <span>AI SOP Agent</span> for faster, cleaner real estate execution.</h1>
-          <p class="subhead">This internal-facing AI assistant is built around City Insight Houston’s operating procedures. It helps agents know what to do next, which documents to collect, which CRM stage to update, and what automations should fire.</p>
+    <section class="hero">
 
-          <div class="cta-row">
-            <a class="btn btn-primary" href="#agent">Ask the SOP Agent →</a>
-            <a class="btn btn-secondary" href="#knowledge">View SOP Knowledge Base</a>
-          </div>
+      <div class="hero-left">
 
-          <div class="stats">
-            <div class="stat"><strong>8</strong><small>Core SOP Workflows</small></div>
-            <div class="stat"><strong>70+</strong><small>Process Phases</small></div>
-            <div class="stat"><strong>24/7</strong><small>Agent Guidance</small></div>
-          </div>
+        <h2>
+          Meet your <span>CIH SOP AI</span>
+        </h2>
+
+        <p>
+          AI-powered SOP intelligence trained on City Insight Houston workflows,
+          systems, compliance, recruiting, leasing, commercial, and operations.
+        </p>
+
+        <div class="hero-buttons">
+          <button class="btn btn-primary">
+            Live AI Connected
+          </button>
+
+          <button class="btn btn-secondary">
+            SOP Knowledge Base Active
+          </button>
         </div>
 
-        <div class="agent-card">
-          <div class="agent-top">
-            <div class="agent-id">
-              <div class="bot-avatar">AI</div>
-              <div>
-                <h3>CIH SOP Agent</h3>
-                <p>Residential • Commercial • Compliance • CIH CRM</p>
-              </div>
-            </div>
-            <div class="status">Online</div>
-          </div>
+      </div>
 
-          <div class="chat-box">
-            <div class="bubble user">I just got a new buyer lead. What do I do first?</div>
-            <div class="bubble bot">Start with qualification: collect contact info, desired area, price range, financing status, timeline, and motivation. Then send the CIH Buyer Intake Form and schedule a Buyer Consultation.</div>
-            <div class="bubble user">What stage should they be in?</div>
-            <div class="bubble bot">Once the intake is complete and consultation is scheduled, tag them as “Qualified Buyer.” After the consultation and representation agreement, move them to “Active Buyer.”</div>
+      <div class="chat-preview">
 
-            <div class="quick-prompts">
-              <button class="prompt-btn" onclick="loadPrompt('buyer')">Generate buyer next steps</button>
-              <button class="prompt-btn" onclick="loadPrompt('seller')">Create seller listing checklist</button>
-              <button class="prompt-btn" onclick="loadPrompt('commercial')">Explain commercial lease workflow</button>
-            </div>
-          </div>
-        </div>
-      </section>
+        <div class="chat-top">
 
-      <section id="knowledge">
-        <div class="section-head">
-          <h2>SOP Knowledge Base</h2>
-          <p>The AI agent is organized around the major CIH service paths so agents can quickly get the right checklist, client script, document list, and CRM move.</p>
-        </div>
+          <div class="chat-agent">
 
-        <div class="grid">
-          <div class="sop-card"><span class="tag">Residential</span><h3>Tenant Leasing</h3><p>Initial qualification, property list, tours, application, lease signing, move-in, review request, and commission packet.</p></div>
-          <div class="sop-card"><span class="tag">Residential</span><h3>Landlord Lease Listing</h3><p>Property intake, listing activation, inquiry management, tenant screening, lease execution, and renewal reminders.</p></div>
-          <div class="sop-card"><span class="tag">Residential</span><h3>Buyer Representation</h3><p>Buyer intake, consultation, home search, offer strategy, due diligence, closing, reviews, and nurture follow-up.</p></div>
-          <div class="sop-card"><span class="tag">Residential</span><h3>Seller Listing</h3><p>Listing presentation, pre-listing prep, launch, showings, open house strategy, negotiation, closing, and annual CMA follow-up.</p></div>
-          <div class="sop-card"><span class="tag">Commercial</span><h3>Tenant Leasing</h3><p>Needs assessment, market research, showings, LOI, lease review, COI, move-in, and renewal tracking.</p></div>
-          <div class="sop-card"><span class="tag">Commercial</span><h3>Landlord Leasing</h3><p>Property intake, launch on commercial platforms, lead qualification, LOI, lease execution, COI, and owner drip campaign.</p></div>
-          <div class="sop-card"><span class="tag">Commercial</span><h3>Buyer Representation</h3><p>Acquisition goals, property shortlist, LOI, contract, due diligence, financing, closing, and valuation follow-up.</p></div>
-          <div class="sop-card"><span class="tag">Commercial</span><h3>Seller Disposition</h3><p>Financial analysis, OM prep, buyer qualification, negotiations, due diligence, and investor follow-up.</p></div>
-        </div>
-      </section>
-
-      <section id="agent">
-        <div class="section-head">
-          <h2>Ask the AI SOP Agent</h2>
-          <p>Choose a workflow and tell the agent what is happening. It will generate next steps, deliverables, CRM moves, and automation ideas.</p>
-        </div>
-
-        <div class="workspace">
-          <div class="panel">
-            <div class="field">
-              <label for="workflow">Workflow</label>
-              <select id="workflow">
-                <option value="buyer">Residential Buyer Representation</option>
-                <option value="seller">Residential Seller Listing</option>
-                <option value="tenant">Residential Tenant Leasing</option>
-                <option value="leaseListing">Residential Lease Listing / Landlord</option>
-                <option value="commercialTenant">Commercial Tenant Leasing</option>
-                <option value="commercialLandlord">Commercial Landlord Leasing</option>
-                <option value="commercialBuyer">Commercial Buyer Representation</option>
-                <option value="commercialSeller">Commercial Seller / Disposition</option>
-              </select>
+            <div class="ai-square">
+              <img src="assets/logo.png">
             </div>
 
-            <div class="field">
-              <label for="scenario">What is the situation?</label>
-              <textarea id="scenario" placeholder="Example: Buyer consultation is complete and they want to see homes this weekend."></textarea>
+            <div>
+              <h3>CIH SOP Agent</h3>
+              <p>
+                Residential • Commercial • Compliance • CIH CRM
+              </p>
             </div>
 
-            <button class="btn btn-primary" onclick="askAI()">Ask CIH AI</button>
           </div>
 
-          <div class="answer-panel">
-            <h3 id="answerTitle">SOP Guidance</h3>
-            <p id="answerIntro">Select a workflow and generate guidance to see the AI agent response.</p>
-            <div class="checklist" id="checklist"></div>
-
-            <div class="output-actions">
-              <button class="mini-btn blue" onclick="copyGuidance()">Copy Guidance</button>
-              <button class="mini-btn" onclick="resetGuidance()">Reset</button>
-            </div>
+          <div class="online">
+            Online
           </div>
-        </div>
-      </section>
 
-      <section>
-        <div class="section-head">
-          <h2>Automation Brain</h2>
-          <p>The AI agent can also remind agents which trigger should start the next workflow inside the CIH CRM, transaction tracker, or internal follow-up system.</p>
         </div>
 
-        <div class="automation-strip">
-          <div class="auto-card"><small>Trigger</small><h3>Intake Form Submitted</h3><p>Create record or deal, notify agent/admin, and move contact into the correct pipeline.</p></div>
-          <div class="auto-card"><small>Trigger</small><h3>Contract / LOI Executed</h3><p>Start transaction tracking, notify broker or TC, and create compliance tasks.</p></div>
-          <div class="auto-card"><small>Trigger</small><h3>Listing Goes Live</h3><p>Launch social post, email blast, team notification, and seller/landlord update.</p></div>
-          <div class="auto-card"><small>Trigger</small><h3>Closing Funded</h3><p>Add to past client list, request review, and start post-close nurture campaign.</p></div>
-          <div class="auto-card"><small>Trigger</small><h3>Lease Expiration</h3><p>Send renewal reminder, re-list proposal, or buyer conversion campaign.</p></div>
+        <div class="bubble user">
+          Buyer wants to submit an offer tonight but is not pre-approved.
         </div>
-      </section>
-    </main>
+
+        <div class="bubble ai">
+          The buyer should first connect with the preferred lender before submitting an offer.
+          Collect income documentation and begin financing review.
+        </div>
+
+        <div class="bubble user">
+          What lender is listed in the SOPs?
+        </div>
+
+        <div class="bubble ai">
+          Alejandra Martinez<br>
+          TAG Lending Group<br>
+          409-370-9140<br>
+          amartinezruiz@taglendinggroup.com
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="workspace" id="agent">
+
+      <div class="panel">
+
+        <h3>Ask CIH AI</h3>
+
+        <div class="field">
+          <label>Workflow</label>
+
+          <select id="workflow">
+            <option value="buyer">Residential Buyer</option>
+            <option value="seller">Residential Seller</option>
+            <option value="tenant">Residential Leasing</option>
+            <option value="commercialTenant">Commercial Tenant</option>
+            <option value="commercialSeller">Commercial Seller</option>
+            <option value="recruiting">Recruiting</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Situation / Question</label>
+
+          <textarea
+            id="scenario"
+            placeholder="Example: Buyer consultation completed and they want to see homes this weekend."></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="askAI()">
+          Ask CIH AI
+        </button>
+
+      </div>
+
+      <div class="response-panel">
+
+        <h3 id="answerTitle">
+          SOP Guidance
+        </h3>
+
+        <div id="answerIntro">
+          Ask the AI a question about transactions, recruiting,
+          leasing, CRM workflows, marketing, onboarding,
+          or CIH SOP systems.
+        </div>
+
+        <div class="response-actions">
+
+          <button class="small-btn" onclick="copyGuidance()">
+            Copy Response
+          </button>
+
+          <button class="small-btn" onclick="resetGuidance()">
+            Reset
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
 
     <footer>
-      Confidential – Internal Use Only © City Insight Houston 2026 • SOP AI Agent
+      Internal Use Only © City Insight Houston 2026
     </footer>
+
   </div>
 
- <script>
+  <script>
 
-async function askAI() {
+    function formatAIResponse(text) {
+      return String(text)
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/### (.*?)(\n|$)/g, "<h3>$1</h3>")
+        .replace(/#### (.*?)(\n|$)/g, "<h4>$1</h4>")
+        .replace(/- (.*?)(\n|$)/g, "<li>$1</li>")
+        .replace(/\n\n/g, "<br><br>")
+        .replace(/\n/g, "<br>");
+    }
 
-  const scenario =
-    document.getElementById("scenario").value.trim();
+    async function askAI() {
 
-  const workflow =
-    document.getElementById("workflow").value;
+      const scenario =
+        document.getElementById("scenario").value.trim();
 
-  if (!scenario) {
-    alert("Please enter a question first.");
-    return;
-  }
+      const workflow =
+        document.getElementById("workflow").value;
 
-  document.getElementById("answerTitle").textContent =
-    "CIH AI is thinking...";
+      if (!scenario) {
+        alert("Please enter a question first.");
+        return;
+      }
 
-  document.getElementById("answerIntro").textContent =
-    "Reviewing SOP systems and generating guidance...";
+      document.getElementById("answerTitle").textContent =
+        "CIH AI is thinking...";
 
-  document.getElementById("checklist").innerHTML = "";
+      document.getElementById("answerIntro").innerHTML =
+        "Searching the CIH SOP knowledge base...";
 
-  try {
+      try {
 
-    const response = await fetch("https://ai.cityinsighthouston.com/api/chat", {
-      method: "POST",
+        const response = await fetch(
+          "https://ai.cityinsighthouston.com/api/chat",
+          {
+            method: "POST",
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+            headers: {
+              "Content-Type": "application/json"
+            },
 
-      body: JSON.stringify({
-        message:
-          `Workflow: ${workflow}\nSituation: ${scenario}`
-      })
-    });
+            body: JSON.stringify({
+              message:
+                `Workflow: ${workflow}\nSituation: ${scenario}`
+            })
+          }
+        );
 
-    const data = await response.json();
+        const data = await response.json();
 
-    document.getElementById("answerTitle").textContent =
-      "CIH AI Response";
+        document.getElementById("answerTitle").textContent =
+          "CIH AI Response";
 
-    document.getElementById("answerIntro").innerHTML =
-  formatAIResponse(data.answer || data.error || "No response returned.");
-  } catch (error) {
+        document.getElementById("answerIntro").innerHTML =
+          formatAIResponse(
+            data.answer ||
+            data.error ||
+            data.details ||
+            JSON.stringify(data)
+          );
 
-    document.getElementById("answerTitle").textContent =
-      "Connection Error";
+      } catch (error) {
 
-    document.getElementById("answerIntro").textContent =
-      "The AI agent could not connect.";
+        document.getElementById("answerTitle").textContent =
+          "Connection Error";
 
-    console.error(error);
+        document.getElementById("answerIntro").textContent =
+          error.message ||
+          "The AI agent could not connect.";
 
-  }
+        console.error(error);
 
-}
-function formatAIResponse(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/### (.*?)(\n|$)/g, "<h3>$1</h3>")
-    .replace(/#### (.*?)(\n|$)/g, "<h4>$1</h4>")
-    .replace(/- (.*?)(\n|$)/g, "<li>$1</li>")
-    .replace(/\n\n/g, "<br><br>")
-    .replace(/\n/g, "<br>");
-}
-</script>
+      }
+
+    }
+
+    function resetGuidance() {
+
+      document.getElementById("scenario").value = "";
+
+      document.getElementById("answerTitle").textContent =
+        "SOP Guidance";
+
+      document.getElementById("answerIntro").innerHTML =
+        "Ask the AI a question about transactions, recruiting, leasing, CRM workflows, marketing, onboarding, or CIH SOP systems.";
+
+    }
+
+    function copyGuidance() {
+
+      const text =
+        document.getElementById("answerIntro").innerText;
+
+      navigator.clipboard.writeText(text);
+
+      alert("Response copied.");
+
+    }
+
+  </script>
+
 </body>
 </html>
+```
