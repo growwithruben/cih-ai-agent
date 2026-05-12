@@ -462,6 +462,77 @@
   }
 
 }
+ html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+* {
+  max-width: 100%;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+.container,
+.page,
+.hero,
+.workspace,
+.agent-card,
+.chat-box,
+.panel,
+.response-panel {
+  width: 100%;
+  max-width: 100%;
+}
+
+textarea,
+select,
+button {
+  width: 100%;
+  max-width: 100%;
+}
+
+.bubble {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .container,
+  .page {
+    width: calc(100% - 18px);
+    margin: 0 auto;
+  }
+
+  .hero,
+  .workspace {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hero-left h2 {
+    font-size: 42px !important;
+    line-height: 1;
+  }
+
+  .agent-card,
+  .chat-box,
+  .panel,
+  .response-panel {
+    border-radius: 22px;
+  }
+
+}
   </style>
 </head>
 <body>
