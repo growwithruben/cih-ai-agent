@@ -18,24 +18,22 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+        "Authorization": "Bearer " + process.env.OPENAI_API_KEY
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        instructions: `
-You are the CIH SOP Agent for City Insight Houston.
 
-Search the uploaded SOP files first.
-If the answer exists in the SOPs, return the exact info.
-If the SOPs do not contain it, say that clearly.
+        instructions:
+          "You are the CIH SOP Agent for City Insight Houston. Search the uploaded SOP files first. If the answer exists in the SOPs, return the exact information. If the SOPs do not contain it, say that clearly. Format clearly with headings and bullets.",
 
-Format clearly with headings and bullets.
-        `,
         input: message,
+
         tools: [
           {
             type: "file_search",
-            vector_store_ids: [process.env.OPENAI_VECTOR_STORE_ID]
+            vector_store_ids: [
+              process.env.OPENAI_VECTOR_STORE_ID
+            ]
           }
         ]
       })
@@ -45,8 +43,9 @@ Format clearly with headings and bullets.
 
     if (!response.ok) {
       return res.status(500).json({
-        error: data.error?.message || "OpenAI error",
-        raw: data
+        error: data.error && data.error.message
+          ? data.error.message
+          : "OpenAI error"
       });
     }
 
@@ -54,15 +53,16 @@ Format clearly with headings and bullets.
 
     if (data.output_text) {
       answer = data.output_text;
-    }
+    } else if (Array.isArray(data.output)) {
+      for (let i = 0; i < data.output.length; i++) {
+        const item = data.output[i];
 
-    if (!answer && Array.isArray(data.output)) {
-      for (const item of data.output) {
-        if (item.type === "message" && Array.isArray(item.content)) {
-          for (const content of item.content) {
-           if (content.text && typeof content.text === "string") {
-  answer += content.text + "\n";
-}
+        if (item && item.type === "message" && Array.isArray(item.content)) {
+          for (let j = 0; j < item.content.length; j++) {
+            const content = item.content[j];
+
+            if (content && content.text && typeof content.text === "string") {
+              answer += content.text + "\n";
             }
           }
         }
@@ -70,7 +70,7 @@ Format clearly with headings and bullets.
     }
 
     if (!answer) {
-      answer = "No readable answer found. Raw response: " + JSON.stringify(data);
+      answer = "No readable answer found.";
     }
 
     return res.status(200).json({
