@@ -8,6 +8,57 @@
   <link rel="icon" href="assets/logo.png">
 
   <style>
+    .chat-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 700px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.thread-message {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.thread-message.user {
+  flex-direction: row-reverse;
+}
+
+.thread-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #101827;
+  color: #25aae1;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.thread-message.user .thread-avatar {
+  background: #25aae1;
+  color: white;
+}
+
+.thread-bubble {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  padding: 16px 18px;
+  border-radius: 18px;
+  line-height: 1.7;
+  max-width: 85%;
+  color: #334155;
+}
+
+.thread-message.user .thread-bubble {
+  background: #25aae1;
+  color: white;
+  border: none;
+}
   .bot-avatar {
   width: 58px;
   height: 58px;
@@ -548,15 +599,21 @@
 
       <div class="response-panel">
 
-        <h3 id="answerTitle">
-          SOP Guidance
-        </h3>
+  <div class="chat-thread" id="chatThread">
 
-        <div id="answerIntro">
-          Ask the AI a question about transactions, recruiting,
-          leasing, CRM workflows, marketing, onboarding,
-          or CIH SOP systems.
-        </div>
+    <div class="thread-message ai">
+      <div class="thread-avatar">AI</div>
+
+      <div class="thread-bubble">
+        Ask the AI a question about transactions,
+        recruiting, CRM workflows, onboarding,
+        leasing, or CIH SOP systems.
+      </div>
+    </div>
+
+  </div>
+
+</div>
 
         <div class="response-actions">
 
