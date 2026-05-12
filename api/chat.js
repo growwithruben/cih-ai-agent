@@ -60,11 +60,9 @@ Format clearly with headings and bullets.
       for (const item of data.output) {
         if (item.type === "message" && Array.isArray(item.content)) {
           for (const content of item.content) {
-            if (content.type === "output_text" && content.text) {
-              answer += content.text + "\n";
-            }
-            if (content.text && typeof content.text === "string") {
-              answer += content.text + "\n";
+           if (content.text && typeof content.text === "string") {
+  answer += content.text + "\n";
+}
             }
           }
         }
