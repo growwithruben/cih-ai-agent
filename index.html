@@ -198,6 +198,9 @@
   border-radius: 26px;
   padding: 18px;
   min-height: 440px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -371,7 +374,37 @@
       }
 
     }
+@media (max-width: 768px) {
 
+  body {
+    overflow-x: hidden;
+  }
+
+  .container,
+  .page {
+    width: calc(100% - 20px);
+  }
+
+  .hero,
+  .workspace {
+    grid-template-columns: 1fr !important;
+  }
+
+  .agent-card,
+  .chat-box,
+  .panel,
+  .response-panel {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .bubble {
+    max-width: 100%;
+    word-break: break-word;
+  }
+
+}
   </style>
 </head>
 <body>
@@ -626,7 +659,7 @@
         "SOP Guidance";
 
       document.getElementById("answerIntro").innerHTML =
-        "Ask the AI a question about transactions, recruiting, leasing, CRM workflows, marketing, onboarding, or CIH SOP systems.";
+        "Ask the AI a question about transactions, leasing, CRM workflows, marketing, onboarding, or CIH SOP systems.";
 
     }
 
