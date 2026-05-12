@@ -1,104 +1,64 @@
-async function askAI() {
+export default async function handler(req, res) {
 
-  const scenario =
-    document.getElementById("scenario").value.trim();
-
-  const workflow =
-    document.getElementById("workflow").value;
-
-  if (!scenario) {
-    alert("Please enter a question first.");
-    return;
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
   }
-
-  const thread =
-    document.getElementById("chatThread");
-
-  thread.innerHTML += `
-    <div class="thread-message user">
-      <div class="thread-avatar">You</div>
-
-      <div class="thread-bubble">
-        ${scenario}
-      </div>
-    </div>
-  `;
-
-  thread.innerHTML += `
-    <div class="thread-message ai" id="typingBubble">
-      <div class="thread-avatar">AI</div>
-
-      <div class="thread-bubble">
-        CIH AI is thinking...
-      </div>
-    </div>
-  `;
-
-  thread.scrollTop = thread.scrollHeight;
-
-  document.getElementById("scenario").value = "";
 
   try {
 
+    const { message } = req.body;
+
     const response = await fetch(
-      "https://ai.cityinsighthouston.com/api/chat",
+      "https://api.openai.com/v1/responses",
       {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
         },
 
         body: JSON.stringify({
-          message:
-            `Workflow: ${workflow}\nSituation: ${scenario}`
+
+          model: "gpt-4.1-mini",
+
+          input: message,
+
+          tools: [
+            {
+              type: "file_search",
+              vector_store_ids: [
+                process.env.OPENAI_VECTOR_STORE_ID
+              ]
+            }
+          ]
+
         })
+
       }
     );
 
     const data = await response.json();
 
-    const typingBubble =
-      document.getElementById("typingBubble");
+    console.log(data);
 
-    if (typingBubble) {
-      typingBubble.remove();
+    let answer = "No response returned.";
+
+    if (data.output_text) {
+      answer = data.output_text;
     }
 
-    thread.innerHTML += `
-      <div class="thread-message ai">
-        <div class="thread-avatar">AI</div>
-
-        <div class="thread-bubble">
-          ${formatAIResponse(
-            data.answer ||
-            data.error ||
-            "No response returned."
-          )}
-        </div>
-      </div>
-    `;
-
-    thread.scrollTop = thread.scrollHeight;
+    return res.status(200).json({
+      answer
+    });
 
   } catch (error) {
 
-    const typingBubble =
-      document.getElementById("typingBubble");
-
-    if (typingBubble) {
-      typingBubble.remove();
-    }
-
-    thread.innerHTML += `
-      <div class="thread-message ai">
-        <div class="thread-avatar">AI</div>
-
-        <div class="thread-bubble">
-          Connection error.
-        </div>
-      </div>
-    `;
+    return res.status(500).json({
+      error: error.message
+    });
 
   }
 
