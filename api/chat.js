@@ -1,156 +1,104 @@
-export default async function handler(req, res) {
+async function askAI() {
 
-  if (req.method === "GET") {
-    return res.status(200).json({
-      status: "CIH API live",
-      hasOpenAIKey: !!process.env.OPENAI_API_KEY,
-      hasVectorStoreId: !!process.env.OPENAI_VECTOR_STORE_ID,
-      vectorStoreIdStart: process.env.OPENAI_VECTOR_STORE_ID
-        ? process.env.OPENAI_VECTOR_STORE_ID.substring(0, 8)
-        : null
-    });
+  const scenario =
+    document.getElementById("scenario").value.trim();
+
+  const workflow =
+    document.getElementById("workflow").value;
+
+  if (!scenario) {
+    alert("Please enter a question first.");
+    return;
   }
 
-  if (req.method !== "POST") {
-    return res.status(405).send("Method not allowed");
-  }
+  const thread =
+    document.getElementById("chatThread");
+
+  thread.innerHTML += `
+    <div class="thread-message user">
+      <div class="thread-avatar">You</div>
+
+      <div class="thread-bubble">
+        ${scenario}
+      </div>
+    </div>
+  `;
+
+  thread.innerHTML += `
+    <div class="thread-message ai" id="typingBubble">
+      <div class="thread-avatar">AI</div>
+
+      <div class="thread-bubble">
+        CIH AI is thinking...
+      </div>
+    </div>
+  `;
+
+  thread.scrollTop = thread.scrollHeight;
+
+  document.getElementById("scenario").value = "";
 
   try {
 
-    const body = req.body || {};
-    const message = body.message;
-
-    if (!message) {
-      return res.status(400).json({
-        error: "No message provided"
-      });
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({
-        error: "OPENAI_API_KEY missing"
-      });
-    }
-
-    if (!process.env.OPENAI_VECTOR_STORE_ID) {
-      return res.status(500).json({
-        error: "OPENAI_VECTOR_STORE_ID missing"
-      });
-    }
-
-    const openaiResponse = await fetch(
-      "https://api.openai.com/v1/responses",
+    const response = await fetch(
+      "https://ai.cityinsighthouston.com/api/chat",
       {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json",
-          "Authorization":
-            `Bearer ${process.env.OPENAI_API_KEY}`
+          "Content-Type": "application/json"
         },
 
         body: JSON.stringify({
-
-          model: "gpt-4.1-mini",
-
-          input: [
-            {
-              role: "system",
-              content:
-                `You are the CIH SOP Agent for City Insight Houston.
-
-                ALWAYS search the uploaded SOP files first before answering.
-
-                If lender names, CRM stages, workflows,
-                phone numbers, emails, compliance notes,
-                or checklists exist in the SOPs,
-                return the EXACT information from the SOP files.
-
-                Do not answer generically if the SOPs contain the answer.
-
-                If the SOP files do not contain the answer,
-                clearly say:
-                "The uploaded SOPs do not currently contain this information."
-
-                Format responses clearly using:
-                - headings
-                - bullet points
-                - step-by-step instructions`
-            },
-
-            {
-              role: "user",
-              content: message
-            }
-
-          ],
-
-          tools: [
-            {
-              type: "file_search",
-              vector_store_ids: [
-                process.env.OPENAI_VECTOR_STORE_ID
-              ]
-            }
-          ],
-
-          tool_choice: "auto"
-
+          message:
+            `Workflow: ${workflow}\nSituation: ${scenario}`
         })
-
       }
     );
 
-    const data = await openaiResponse.json();
+    const data = await response.json();
 
-    if (!openaiResponse.ok) {
+    const typingBubble =
+      document.getElementById("typingBubble");
 
-      return res.status(500).json({
-        error:
-          data.error && data.error.message
-            ? data.error.message
-            : "OpenAI SOP search failed",
-        raw: data
-      });
-
+    if (typingBubble) {
+      typingBubble.remove();
     }
 
-    let answer = data.output_text;
+    thread.innerHTML += `
+      <div class="thread-message ai">
+        <div class="thread-avatar">AI</div>
 
-    if (
-      !answer &&
-      data.output &&
-      data.output[0] &&
-      data.output[0].content &&
-      data.output[0].content[0]
-    ) {
-      answer = data.output[0].content[0].text;
-    }
+        <div class="thread-bubble">
+          ${formatAIResponse(
+            data.answer ||
+            data.error ||
+            "No response returned."
+          )}
+        </div>
+      </div>
+    `;
 
-    if (
-      !answer &&
-      data.output &&
-      data.output[1] &&
-      data.output[1].content &&
-      data.output[1].content[0]
-    ) {
-      answer = data.output[1].content[0].text;
-    }
-
-    if (!answer) {
-      answer = JSON.stringify(data, null, 2);
-    }
-
-    return res.status(200).json({
-      answer: answer
-    });
+    thread.scrollTop = thread.scrollHeight;
 
   } catch (error) {
 
-    return res.status(500).json({
-      error: "Server error",
-      details: error.message
-    });
+    const typingBubble =
+      document.getElementById("typingBubble");
+
+    if (typingBubble) {
+      typingBubble.remove();
+    }
+
+    thread.innerHTML += `
+      <div class="thread-message ai">
+        <div class="thread-avatar">AI</div>
+
+        <div class="thread-bubble">
+          Connection error.
+        </div>
+      </div>
+    `;
 
   }
 
