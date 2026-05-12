@@ -733,7 +733,159 @@
       alert("Response copied.");
 
     }
+<script>
+function formatAIResponse(text) {
+  return String(text)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/### (.*?)(\n|$)/g, "<h3>$1</h3>")
+    .replace(/#### (.*?)(\n|$)/g, "<h4>$1</h4>")
+    .replace(/- (.*?)(\n|$)/g, "<li>$1</li>")
+    .replace(/\n\n/g, "<br><br>")
+    .replace(/\n/g, "<br>");
+}
 
+async function askAI() {
+  const scenarioInput = document.getElementById("scenario");
+  const workflowInput = document.getElementById("workflow");
+
+  if (!scenarioInput || !workflowInput) {
+    alert("Missing scenario or workflow field.");
+    return;
+  }
+
+  const scenario = scenarioInput.value.trim();
+  const workflow = workflowInput.value;
+
+  if (!scenario) {
+    alert("Please enter a question first.");
+    return;
+  }
+
+  const thread = document.getElementById("chatThread");
+  const answerTitle = document.getElementById("answerTitle");
+  const answerIntro = document.getElementById("answerIntro");
+  const checklist = document.getElementById("checklist");
+
+  if (thread) {
+    thread.insertAdjacentHTML("beforeend", `
+      <div class="thread-message user">
+        <div class="thread-avatar">You</div>
+        <div class="thread-bubble">${scenario}</div>
+      </div>
+
+      <div class="thread-message ai" id="typingBubble">
+        <div class="thread-avatar">AI</div>
+        <div class="thread-bubble">CIH AI is thinking...</div>
+      </div>
+    `);
+
+    thread.scrollTop = thread.scrollHeight;
+  } else {
+    if (answerTitle) answerTitle.textContent = "CIH AI is thinking...";
+    if (answerIntro) answerIntro.innerHTML = "Searching the CIH SOP knowledge base...";
+    if (checklist) checklist.innerHTML = "";
+  }
+
+  scenarioInput.value = "";
+
+  try {
+    const response = await fetch("https://ai.cityinsighthouston.com/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: `Workflow: ${workflow}\nSituation: ${scenario}`
+      })
+    });
+
+    const data = await response.json();
+
+    const formatted =
+      formatAIResponse(data.answer || data.error || data.details || JSON.stringify(data));
+
+    if (thread) {
+      const typingBubble = document.getElementById("typingBubble");
+      if (typingBubble) typingBubble.remove();
+
+      thread.insertAdjacentHTML("beforeend", `
+        <div class="thread-message ai">
+          <div class="thread-avatar">AI</div>
+          <div class="thread-bubble">${formatted}</div>
+        </div>
+      `);
+
+      thread.scrollTop = thread.scrollHeight;
+    } else {
+      if (answerTitle) answerTitle.textContent = "CIH AI Response";
+      if (answerIntro) answerIntro.innerHTML = formatted;
+    }
+
+  } catch (error) {
+    const message = error.message || "The AI agent could not connect.";
+
+    if (thread) {
+      const typingBubble = document.getElementById("typingBubble");
+      if (typingBubble) typingBubble.remove();
+
+      thread.insertAdjacentHTML("beforeend", `
+        <div class="thread-message ai">
+          <div class="thread-avatar">AI</div>
+          <div class="thread-bubble">${message}</div>
+        </div>
+      `);
+    } else {
+      if (answerTitle) answerTitle.textContent = "Connection Error";
+      if (answerIntro) answerIntro.textContent = message;
+    }
+
+    console.error(error);
+  }
+}
+
+function resetGuidance() {
+  const scenario = document.getElementById("scenario");
+  const thread = document.getElementById("chatThread");
+  const answerTitle = document.getElementById("answerTitle");
+  const answerIntro = document.getElementById("answerIntro");
+  const checklist = document.getElementById("checklist");
+
+  if (scenario) scenario.value = "";
+
+  if (thread) {
+    thread.innerHTML = `
+      <div class="thread-message ai">
+        <div class="thread-avatar">AI</div>
+        <div class="thread-bubble">
+          Ask the AI a question about transactions, recruiting, CRM workflows, onboarding, leasing, or CIH SOP systems.
+        </div>
+      </div>
+    `;
+  }
+
+  if (answerTitle) answerTitle.textContent = "SOP Guidance";
+  if (answerIntro) {
+    answerIntro.innerHTML =
+      "Ask the AI a question about transactions, recruiting, leasing, CRM workflows, marketing, onboarding, or CIH SOP systems.";
+  }
+
+  if (checklist) checklist.innerHTML = "";
+}
+
+function copyGuidance() {
+  const thread = document.getElementById("chatThread");
+  const answerIntro = document.getElementById("answerIntro");
+
+  const text = thread
+    ? thread.innerText
+    : answerIntro
+      ? answerIntro.innerText
+      : "";
+
+  navigator.clipboard.writeText(text);
+  alert("Response copied.");
+}
+</script>
   </script>
 
 </body>
